@@ -17,7 +17,9 @@
   ],
   "author": "Loop/Recur",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "baconjs": "~0.6"
+  },
   "devDependencies": {
     "mocha": "~1.9.0",
     "chai": "~1.6.0",

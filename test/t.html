@@ -13,7 +13,7 @@
     });
 
     // Require libraries
-    require(['mocha/mocha'], function(){
+    require(['sinon/pkg/sinon-1.7.3', 'mocha/mocha'], function(sinon){
       window.assert = chai.assert;
       mocha.setup('bdd');
 

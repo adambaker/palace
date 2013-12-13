@@ -32,6 +32,14 @@ module.exports = function(grunt) {
           dest: 'cjs/'
         }]
       }
+    },
+    mochaTest: {
+      test: {
+        options: {
+          require: 'LiveScript'
+        },
+        src: ['test/*.ls']
+      }
     }
     //watch: {
     //}
@@ -39,8 +47,11 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-es6-module-transpiler');
+  grunt.loadNpmTasks('grunt-mocha-test');
   //grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('build:amd', ['transpile:amd', 'requirejs']);
   grunt.registerTask('build:cjs', ['transpile:cjs']);
+  grunt.registerTask('test', ['build:cjs', 'mochaTest']);
+  grunt.registerTask('default', ['test']);
 };

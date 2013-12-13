@@ -11,7 +11,8 @@ module.exports = function(grunt) {
             bacon: '../node_modules/baconjs/dist/Bacon'
           },
           name: 'palace',
-          out: 'amd/index.js', optimize: 'none'
+          out: 'amd/index.js',
+          optimize: 'none'
         }
       }
     },

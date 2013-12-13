@@ -3,55 +3,39 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    //requirejs: {
-      //compile: {
-        //options: {
-          //baseUrl: 'tmp/',
-          //name: 'typeclasses',
-          //out: 'amd/index.js',
-          //optimize: 'none'
-        //}
-      //}
-    //},
-    transpile: {
-      amd: {
-        type: 'amd',
-        files: [{
-          expand: true,
-          cwd: 'src/',
-          src: ['*.js'],
-          dest: 'tmp/'
-        }],
-      },
-      cjs: {
-        type: 'cjs',
-        files: [{
-          expand: true,
-          cwd: 'src/',
-          src: ['*.js'],
-          dest: 'cjs/'
-        }]
+    requirejs: {
+      compile: {
+        options: {
+          baseUrl: 'src/',
+          paths: {
+            bacon: '../node_modules/baconjs/dist/Bacon'
+          },
+          name: 'palace',
+          out: 'amd/index.js', optimize: 'none'
+        }
       }
     },
-    mochaTest: {
-      test: {
-        options: {
-          require: 'LiveScript'
-        },
-        src: ['test/*.ls']
+    livescript: {
+      src: {
+        expand: true,
+        flatten: true,
+        src: ['test/*.ls'],
+        dest: 'test/',
+        ext: '.js'
       }
+    },
+    mocha_phantomjs: {
+      all: ['test/t.html']
     }
-    //watch: {
-    //}
   });
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-es6-module-transpiler');
-  grunt.loadNpmTasks('grunt-mocha-test');
-  //grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-mocha-phantomjs');
+  grunt.loadNpmTasks('grunt-livescript');
 
-  grunt.registerTask('build:amd', ['transpile:amd', 'requirejs']);
-  grunt.registerTask('build:cjs', ['transpile:cjs']);
-  grunt.registerTask('test', ['build:cjs', 'mochaTest']);
+  //grunt.registerTask('build:cjs', ['transpile:cjs']);
+  //grunt.registerTask('test', ['build:cjs', 'mochaTest']);
+  grunt.registerTask('build', ['requirejs']);
+  grunt.registerTask('test', ['build', 'livescript', 'mocha_phantomjs']);
   grunt.registerTask('default', ['test']);
 };

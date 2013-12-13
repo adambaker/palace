@@ -1,23 +1,26 @@
-import {Bus} from 'baconjs'
-
-export var Stream = function(){
-  var bus = new Bus;
-  return {
-    in: {
-      push: function(data) {
-        bus.push(data)
+define(['bacon'], function(b) {
+  var Stream = function(){
+    var bus = new b.Bus;
+    return {
+      in: {
+        push: function(data) {
+          bus.push(data)
+        },
+        end: function(){bus.end()},
+        error: function(err) {bus.error(err); bus.end();}
       },
-      end: function(){bus.end()},
-      error: function(err) {bus.error(err); bus.end();}
-    },
-    stream: {
-      each: function(fn) {
-        bus.onValue(fn);
+      stream: {
+        each: function(fn) {
+          bus.onValue(fn);
+        },
+        filter: function(pred) {
+        }
       }
     }
-  }
-};
+  };
 
-export var on = function(){
-};
+  var on = function(){
+  };
 
+  return {Stream: Stream}
+});

@@ -30,7 +30,9 @@
     "grunt-mocha-test": "~0.8",
     "claire": "~0.4.1",
     "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-es6-module-transpiler": "~0.5.1"
+    "grunt-es6-module-transpiler": "~0.5.1",
+    "grunt-mocha-phantomjs": "~0.3.2",
+    "grunt-livescript": "~0.5.1"
   },
   "bugs": {
     "url": "https://github.com/adambaker/palace/issues"

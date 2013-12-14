@@ -7,13 +7,12 @@ define <[palace]>, (streams) ->
   describe 'Stream' !->
     before-each !->
       s = Stream!
+      @spy = sinon.spy!
       @in = s.in
       @stream = s.stream
 
     describe 'each' !->
       before-each !->
-        @x = 0;
-        @spy = sinon.spy()
         @stream.each @spy
 
       o 'executes its action every time the stream is pushed to' !->
@@ -36,13 +35,21 @@ define <[palace]>, (streams) ->
         assert @spy.calledOnce
         assert @spy.calledWith(2)
 
-    describe 'filter' !->
+    o 'filter only passes through values that pass the predicate' !->
+      filtered = @stream.filter -> it < 5
+      filtered.each @spy
+      @in.push(2);
+      @in.push(11)
+      assert @spy.calledOnce
+      assert @spy.calledWith(2)
 
-      o 'is a method' !->
-        assert.isFunction @stream.filter
-
-    #o 'streams can be fmapped over' !->
-      #assert.isFunction Stream!.stream.fmap
+    o 'fmap maps a function over a stream' !->
+      mapped = @stream.fmap (+ 1)
+      mapped.each @spy
+      @in.push(2);
+      @in.push(11)
+      assert @spy.calledTwice
+      assert.deepEqual @spy.args, [[3], [12]]
 
     #o 'fmapping produces a new stream' !->
       #assert is-stream Stream!.stream.fmap (+ 1)

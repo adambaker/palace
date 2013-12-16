@@ -2466,6 +2466,11 @@ define('streams',['bacon'], function(b) {
       },
       filter: function(pred) {
         return streamFromBacon(baconStream.filter(pred));
+      },
+      merge: function(other) {
+        bus = new b.Bus;
+        other.each(function(data){bus.push(data)});
+        return streamFromBacon(baconStream.merge(bus));
       }
     }
   };

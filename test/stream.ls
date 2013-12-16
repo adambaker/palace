@@ -6,31 +6,29 @@ define <[palace]>, (streams) ->
 
   describe 'Stream' !->
     before-each !->
-      s = Stream!
+      {@in, @stream} = Stream!
       @spy = sinon.spy!
-      @in = s.in
-      @stream = s.stream
 
     describe 'each' !->
       before-each !->
         @stream.each @spy
 
       o 'executes its action every time the stream is pushed to' !->
-        @in.push(2);
+        @in.push(2)
         @in.push(11)
         assert @spy.calledTwice
         assert.deepEqual @spy.args, [[2], [11]]
 
       o 'stops executing after end' !->
-        @in.push(2);
-        @in.end();
+        @in.push(2)
+        @in.end!
         @in.push(11)
         assert @spy.calledOnce
         assert @spy.calledWith(2)
 
       o 'stops executing after an error' !->
-        @in.push(2);
-        @in.error('cut this shit out!');
+        @in.push(2)
+        @in.error('cut this shit out!')
         @in.push(11)
         assert @spy.calledOnce
         assert @spy.calledWith(2)
@@ -38,7 +36,7 @@ define <[palace]>, (streams) ->
     o 'filter only passes through values that pass the predicate' !->
       filtered = @stream.filter -> it < 5
       filtered.each @spy
-      @in.push(2);
+      @in.push(2)
       @in.push(11)
       assert @spy.calledOnce
       assert @spy.calledWith(2)
@@ -46,10 +44,22 @@ define <[palace]>, (streams) ->
     o 'fmap maps a function over a stream' !->
       mapped = @stream.fmap (+ 1)
       mapped.each @spy
-      @in.push(2);
+      @in.push(2)
       @in.push(11)
       assert @spy.calledTwice
       assert.deepEqual @spy.args, [[3], [12]]
 
-    #o 'fmapping produces a new stream' !->
-      #assert is-stream Stream!.stream.fmap (+ 1)
+    o 'merge mingles two streams' !->
+      s = Stream!
+      other_in = s.in
+      other = s.stream
+      merged = @stream.merge other
+      merged.each @spy
+      @in.push(2)
+      other_in.push(14)
+      @in.push(11)
+      @in.push(6)
+      other_in.push(8)
+      other_in.push(null)
+      assert.deepEqual @spy.args, [[2], [14], [11], [6], [8], [null]]
+

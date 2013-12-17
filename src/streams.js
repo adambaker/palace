@@ -22,12 +22,8 @@ define(['bacon'], function(b) {
       onEnd: function(action) {
         baconStream.onEnd(endAction(action));
       },
-      each: function(action) {
-        baconStream.onValue(action);
-      },
-      fmap: function(fn){
-        return streamFromBacon(baconStream.map(fn));
-      },
+      each: delegate('onValue'),
+      fmap: delegate('map'),
       merge: function(other) {
         bus = new b.Bus;
         other.each(function(data){bus.push(data)});

@@ -63,15 +63,19 @@ define <[palace]>, (streams) ->
       s = Stream!
       other_in = s.in
       other = s.stream
-      merged = @stream.merge other
+      s = Stream!
+      third_in = s.in
+      third = s.stream
+      merged = @stream.merge other, third
       merged.each @spy
       @in.push(2)
       other_in.push(14)
       @in.push(11)
+      third_in.push('hi')
       @in.push(6)
       other_in.push(8)
       other_in.push(null)
-      assert.deepEqual @spy.args, [[2], [14], [11], [6], [8], [null]]
+      assert.deepEqual @spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]
 
     o 'take n truncates the stream to the first n' !->
       s = @stream.take 2

@@ -24,11 +24,13 @@ define(['bacon'], function(b) {
       },
       each: delegate('onValue'),
       fmap: delegate('map'),
-      merge: function(other) {
+      merge: function() {
         bus = new b.Bus;
-        other.each(function(data){bus.push(data)});
+        [].forEach.call(arguments, function(other) {
+          other.each(function(data){bus.push(data)});
+        });
         return streamFromBacon(baconStream.merge(bus));
-      }
+      },
     };
     'take takeWhile filter'.split(' ').forEach(function(method){
       stream[method] = delegate(method);

@@ -57,7 +57,6 @@ define <[palace]>, (streams) ->
       mapped.each @spy
       @in.push(2)
       @in.push(11)
-      assert @spy.calledTwice
       assert.deepEqual @spy.args, [[3], [12]]
 
     o 'merge mingles two streams' !->
@@ -73,3 +72,11 @@ define <[palace]>, (streams) ->
       other_in.push(8)
       other_in.push(null)
       assert.deepEqual @spy.args, [[2], [14], [11], [6], [8], [null]]
+
+    o 'take n truncates the stream to the first n' !->
+      s = @stream.take 2 @stream
+      s.each @spy
+      @in.push(2)
+      @in.push(11)
+      @in.push(22)
+      assert.deepEqual @spy.args, [[2], [11]]

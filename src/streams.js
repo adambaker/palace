@@ -1,5 +1,10 @@
 define(['bacon'], function(b) {
   var streamFromBacon = function(baconStream) {
+    var delegate = function(method) {
+      return function(){
+        return streamFromBacon(baconStream[method].apply(baconStream,arguments));
+      };
+    };
     var ended = false;
     var endAction = function(action) {
       return function(arg) {
@@ -10,12 +15,15 @@ define(['bacon'], function(b) {
       };
     };
 
-    return {
+    var stream = {
       onError: function(action) {
         baconStream.onError(endAction(action));
       },
       onEnd: function(action) {
         baconStream.onEnd(endAction(action));
+      },
+      take: function(n) {
+        return streamFromBacon(baconStream.take(n));
       },
       each: function(action) {
         baconStream.onValue(action);
@@ -31,7 +39,11 @@ define(['bacon'], function(b) {
         other.each(function(data){bus.push(data)});
         return streamFromBacon(baconStream.merge(bus));
       }
-    }
+    };
+    'take filter'.split(' ').forEach(function(method){
+      stream[method] = delegate(method);
+    });
+    return stream;
   };
 
   var Stream = function(){

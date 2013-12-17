@@ -2479,17 +2479,11 @@ define('streams',['bacon'], function(b) {
       onEnd: function(action) {
         baconStream.onEnd(endAction(action));
       },
-      take: function(n) {
-        return streamFromBacon(baconStream.take(n));
-      },
       each: function(action) {
         baconStream.onValue(action);
       },
       fmap: function(fn){
         return streamFromBacon(baconStream.map(fn));
-      },
-      filter: function(pred) {
-        return streamFromBacon(baconStream.filter(pred));
       },
       merge: function(other) {
         bus = new b.Bus;
@@ -2497,7 +2491,7 @@ define('streams',['bacon'], function(b) {
         return streamFromBacon(baconStream.merge(bus));
       }
     };
-    'take filter'.split(' ').forEach(function(method){
+    'take takeWhile filter'.split(' ').forEach(function(method){
       stream[method] = delegate(method);
     });
     return stream;

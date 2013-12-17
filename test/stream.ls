@@ -74,9 +74,16 @@ define <[palace]>, (streams) ->
       assert.deepEqual @spy.args, [[2], [14], [11], [6], [8], [null]]
 
     o 'take n truncates the stream to the first n' !->
-      s = @stream.take 2 @stream
+      s = @stream.take 2
       s.each @spy
       @in.push(2)
       @in.push(11)
       @in.push(22)
       assert.deepEqual @spy.args, [[2], [11]]
+
+    o 'takeWhile truncates when the predicate fails' !->
+      s = @stream.takeWhile (< 5)
+      s.each @spy
+      @in.push(2)
+      @in.push(11)
+      assert.deepEqual @spy.args, [[2]]

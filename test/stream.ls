@@ -1,6 +1,5 @@
 define <[palace]>, (streams) ->
   const Stream = streams.Stream
-  const on-ui = streams.on
 
   const o = it
 
@@ -19,19 +18,31 @@ define <[palace]>, (streams) ->
         assert @spy.calledTwice
         assert.deepEqual @spy.args, [[2], [11]]
 
-      o 'stops executing after end' !->
+      o 'stops executing after end, calls onEnd handler' !->
+        endSpy = sinon.spy ~>
+          assert @spy.calledOnce, 'only got one value'
+          assert @spy.calledWith(2), 'value passed through'
+        @stream.onError -> assert false, 'error after end'
+        @stream.onEnd endSpy
         @in.push(2)
         @in.end!
         @in.push(11)
-        assert @spy.calledOnce
-        assert @spy.calledWith(2)
-
-      o 'stops executing after an error' !->
-        @in.push(2)
+        @in.end!
         @in.error('cut this shit out!')
-        @in.push(11)
-        assert @spy.calledOnce
-        assert @spy.calledWith(2)
+        assert endSpy.calledOnce, 'called end'
+
+      o 'stops executing after error, calles onError handler' !->
+        errSpy = sinon.spy ~>
+          assert @spy.calledOnce, 'only got one value'
+          assert @spy.calledWith(2), 'value passed through'
+        @stream.onEnd -> assert false, 'end after error'
+        @stream.onError errSpy
+        @in.push 2
+        @in.error 'cut this shit out!'
+        @in.push 11
+        @in.end!
+        @in.error 'something else really bad'
+        assert.deepEqual errSpy.args, [['cut this shit out!']], 'calls onError handler correctly'
 
     o 'filter only passes through values that pass the predicate' !->
       filtered = @stream.filter -> it < 5
@@ -62,4 +73,3 @@ define <[palace]>, (streams) ->
       other_in.push(8)
       other_in.push(null)
       assert.deepEqual @spy.args, [[2], [14], [11], [6], [8], [null]]
-

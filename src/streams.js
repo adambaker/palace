@@ -1,6 +1,22 @@
 define(['bacon'], function(b) {
   var streamFromBacon = function(baconStream) {
+    var ended = false;
+    var endAction = function(action) {
+      return function(arg) {
+        if(!ended) {
+          ended = true;
+          action(arg);
+        }
+      };
+    };
+
     return {
+      onError: function(action) {
+        baconStream.onError(endAction(action));
+      },
+      onEnd: function(action) {
+        baconStream.onEnd(endAction(action));
+      },
       each: function(action) {
         baconStream.onValue(action);
       },
@@ -20,13 +36,14 @@ define(['bacon'], function(b) {
 
   var Stream = function(){
     var bus = new b.Bus;
+    bus.endOnError();
     return {
       in: {
         push: function(data) {
           bus.push(data)
         },
         end: function(){bus.end()},
-        error: function(err) {bus.error(err); bus.end();}
+        error: function(err) {bus.error(err)}
       },
       stream: streamFromBacon(bus)
     }

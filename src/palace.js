@@ -1,3 +1,3 @@
-define(['./streams'], function(streams){
-  return streams;
+define(['./streams'], function(Stream){
+  return {Stream: Stream};
 });

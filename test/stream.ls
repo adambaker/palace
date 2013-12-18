@@ -1,5 +1,5 @@
-define <[palace]>, (streams) ->
-  const Stream = streams.Stream
+define <[palace]>, (palace) ->
+  const Stream = palace.Stream
 
   const o = it
 

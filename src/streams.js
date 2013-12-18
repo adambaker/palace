@@ -53,8 +53,5 @@ define(['bacon'], function(b) {
     }
   };
 
-  var on = function(){
-  };
-
-  return {Stream: Stream}
+  return Stream
 });

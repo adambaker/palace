@@ -2510,12 +2510,9 @@ define('streams',['bacon'], function(b) {
     }
   };
 
-  var on = function(){
-  };
-
-  return {Stream: Stream}
+  return Stream
 });
 
-define('palace',['./streams'], function(streams){
-  return streams;
+define('palace',['./streams'], function(Stream){
+  return {Stream: Stream};
 });

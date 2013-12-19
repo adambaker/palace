@@ -31,7 +31,22 @@
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-mocha-phantomjs": "~0.3.2",
     "grunt-livescript": "~0.5.1",
-    "sinon": "~1.7.3"
+    "sinon": "~1.7.3",
+    "requirejs": "~2.1.9"
+  },
+  "testling": {
+    "files": "test/stream.js",
+    "harness": "mocha",
+    "browsers": [
+      "ie/8..latest",
+      "chrome/20..latest",
+      "firefox/15..latest",
+      "safari/latest",
+      "opera/11.0..latest",
+      "iphone/6",
+      "ipad/6",
+      "android-browser/4.2"
+    ]
   },
   "bugs": {
     "url": "https://github.com/adambaker/palace/issues"

@@ -26,7 +26,7 @@ module.exports = function(grunt) {
       }
     },
     mocha_phantomjs: {
-      all: ['test/t.html']
+      all: ['test-harness.html']
     }
   });
 

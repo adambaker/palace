@@ -1,3 +1,3 @@
-define(['./streams'], function(Stream){
-  return {Stream: Stream};
-});
+module.exports = {
+  Stream: require('./stream');
+};

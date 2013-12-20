@@ -1,4 +1,4 @@
-
+!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.palace=e():"undefined"!=typeof global?global.palace=e():"undefined"!=typeof self&&(self.palace=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
   var Bacon, Bus, CompositeUnsubscribe, Dispatcher, End, Error, Event, EventStream, Initial, Next, None, Observable, Property, PropertyDispatcher, PropertyTransaction, Some, Source, addPropertyInitValueToStream, assert, assertArray, assertEvent, assertEventStream, assertFunction, assertNoArguments, assertString, cloneArray, compositeUnsubscribe, convertArgsToFunction, end, former, indexOf, initial, isFieldKey, isFunction, latterF, liftCallback, makeFunction, makeFunctionArgs, makeFunction_, makeSpawner, next, nop, partiallyApplied, toCombinator, toEvent, toFieldExtractor, toFieldKey, toOption, toSimpleExtractor, withMethodCallSupport, _, _ref, _ref1, _ref2,
     __slice = [].slice,
@@ -2446,7 +2446,7 @@
     Bacon.Bacon = Bacon;
   } else {
     if ((typeof define !== "undefined" && define !== null) && (define.amd != null)) {
-      define('bacon',[], function() {
+      define([], function() {
         return Bacon;
       });
     }
@@ -2455,64 +2455,69 @@
 
 }).call(this);
 
-define('streams',['bacon'], function(b) {
-  var streamFromBacon = function(baconStream) {
-    var delegate = function(method) {
-      return function(){
-        return streamFromBacon(baconStream[method].apply(baconStream,arguments));
-      };
-    };
-    var ended = false;
-    var endAction = function(action) {
-      return function(arg) {
-        if(!ended) {
-          ended = true;
-          action(arg);
-        }
-      };
-    };
+},{}],2:[function(require,module,exports){
+module.exports = {
+  Stream: require('./streams')
+};
 
-    var stream = {
-      onError: function(action) {
-        baconStream.onError(endAction(action));
-      },
-      onEnd: function(action) {
-        baconStream.onEnd(endAction(action));
-      },
-      each: delegate('onValue'),
-      fmap: delegate('map'),
-      merge: function() {
-        bus = new b.Bus;
-        [].forEach.call(arguments, function(other) {
-          other.each(function(data){bus.push(data)});
-        });
-        return streamFromBacon(baconStream.merge(bus));
-      },
+},{"./streams":3}],3:[function(require,module,exports){
+var b = require('baconjs');
+var streamFromBacon = function(baconStream) {
+  var delegate = function(method) {
+    return function(){
+      return streamFromBacon(baconStream[method].apply(baconStream,arguments));
     };
-    'take takeWhile filter'.split(' ').forEach(function(method){
-      stream[method] = delegate(method);
-    });
-    return stream;
+  };
+  var ended = false;
+  var endAction = function(action) {
+    return function(arg) {
+      if(!ended) {
+        ended = true;
+        action(arg);
+      }
+    };
   };
 
-  var Stream = function(){
-    var bus = new b.Bus;
-    bus.endOnError();
-    return {
-      in: {
-        push: function(data) {
-          bus.push(data)
-        },
-        end: function(){bus.end()},
-        error: function(err) {bus.error(err)}
-      },
-      stream: streamFromBacon(bus)
-    }
+  var stream = {
+    onError: function(action) {
+      baconStream.onError(endAction(action));
+    },
+    onEnd: function(action) {
+      baconStream.onEnd(endAction(action));
+    },
+    each: delegate('onValue'),
+    fmap: delegate('map'),
+    merge: function() {
+      bus = new b.Bus;
+      [].forEach.call(arguments, function(other) {
+        other.each(function(data){bus.push(data)});
+      });
+      return streamFromBacon(baconStream.merge(bus));
+    },
   };
+  'take takeWhile filter'.split(' ').forEach(function(method){
+    stream[method] = delegate(method);
+  });
+  return stream;
+};
 
-  return Stream
-});
+var Stream = function(){
+  var bus = new b.Bus;
+  bus.endOnError();
+  return {
+    in: {
+      push: function(data) {
+        bus.push(data)
+      },
+      end: function(){bus.end()},
+      error: function(err) {bus.error(err)}
+    },
+    stream: streamFromBacon(bus)
+  }
+};
 
-define('palace',['./streams'], function(Stream){
-  return {Stream: Stream};
+module.exports = Stream
+
+},{"baconjs":1}]},{},[2])
+(2)
 });

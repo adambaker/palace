@@ -1,18 +1,12 @@
 module.exports = function(grunt) {
-
-  // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    requirejs: {
-      compile: {
+    browserify: {
+      dest: {
+        src: ['src/palace.js'],
+        dest: 'amd/index.js',
         options: {
-          baseUrl: 'src/',
-          paths: {
-            bacon: '../node_modules/baconjs/dist/Bacon'
-          },
-          name: 'palace',
-          out: 'amd/index.js',
-          optimize: 'none'
+          standalone: 'palace'
         }
       }
     },
@@ -30,13 +24,12 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-requirejs');
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
   grunt.loadNpmTasks('grunt-livescript');
 
-  //grunt.registerTask('build:cjs', ['transpile:cjs']);
   //grunt.registerTask('test', ['build:cjs', 'mochaTest']);
-  grunt.registerTask('build', ['requirejs']);
+  grunt.registerTask('build', ['browserify']);
   grunt.registerTask('test', ['build', 'livescript', 'mocha_phantomjs']);
   grunt.registerTask('default', ['test']);
 };

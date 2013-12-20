@@ -18,7 +18,6 @@
     require(['sinon', 'mocha/mocha'], function(){
       window.assert = chai.assert
       mocha.setup('bdd');
-      mocha.reporter('tap');
 
       require(['../test/stream'], function(){
         if (window.mochaPhantomJS) { mochaPhantomJS.run(); }

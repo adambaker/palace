@@ -35,6 +35,7 @@ var streamFromBacon = function(baconStream) {
   'take takeWhile filter'.split(' ').forEach(function(method){
     stream[method] = delegate(method);
   });
+  stream.map = stream.fmap;
   return stream;
 };
 

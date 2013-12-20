@@ -90,6 +90,9 @@ mod = (Stream, sinon, assert) !->
       @in.push(11)
       assert.deepEqual @spy.args, [[2]]
 
+    o 'map === fmap' !->
+      assert.strictEqual @stream.map, @stream.fmap
+
 if typeof define == \function
   define <[palace]> (palace) !->
     mod(palace.Stream, window.sinon, window.assert);

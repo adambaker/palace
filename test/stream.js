@@ -113,6 +113,9 @@
         this['in'].push(11);
         assert.deepEqual(this.spy.args, [[2]]);
       });
+      o('map === fmap', function(){
+        assert.strictEqual(this.stream.map, this.stream.fmap);
+      });
     });
   };
   if (typeof define === 'function') {

@@ -1,6 +1,6 @@
 (function(){
-  var mod, Stream, sinon, assert;
-  mod = function(Stream, sinon, assert){
+  var mod;
+  mod = function(Stream){
     var o;
     o = it;
     describe('Stream', function(){
@@ -120,12 +120,9 @@
   };
   if (typeof define === 'function') {
     define(['palace'], function(palace){
-      mod(palace.Stream, window.sinon, window.assert);
+      mod(palace.Stream);
     });
   } else {
-    Stream = require('../src/streams');
-    sinon = require('sinon');
-    assert = require('chai').assert;
-    mod(Stream, sinon, assert);
+    mod(require('../../src/streams'));
   }
 }).call(this);

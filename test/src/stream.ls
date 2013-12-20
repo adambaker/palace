@@ -1,4 +1,4 @@
-mod = (Stream, sinon, assert) !->
+mod = (Stream) !->
   const o = it
 
   describe 'Stream' !->
@@ -95,9 +95,6 @@ mod = (Stream, sinon, assert) !->
 
 if typeof define == \function
   define <[palace]> (palace) !->
-    mod(palace.Stream, window.sinon, window.assert);
+    mod palace.Stream
 else
-  const Stream = require '../src/streams'
-  require! sinon
-  require! chai.assert
-  mod(Stream, sinon, assert)
+  mod(require '../../src/streams')

@@ -20,7 +20,7 @@ module.exports = function(grunt) {
       src: {
         expand: true,
         flatten: true,
-        src: ['test/*.ls'],
+        src: ['test/src/*.ls'],
         dest: 'test/',
         ext: '.js'
       }

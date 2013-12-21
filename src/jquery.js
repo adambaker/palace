@@ -1,25 +1,11 @@
 var Stream = require('./streams');
+var curry = require('./util').curry;
 
 var events = ('resize blur change focus focusin focusout select submit ' +
   'keydown keyup keypress click dblclick mousedown mouseup ' +
   'mouseover mouseout mouseenter mouseleave').split(' ');
 
 var cap = function(str) {return str.charAt(0).toUpperCase() + str.slice(1)}
-
-//stealing livescript's curry$
-function curry(f, bound){
-  var context,
-  _curry = function(args) {
-    return f.length > 1 ? function(){
-      var params = args ? args.concat() : [];
-      context = bound ? context || this : this;
-      return params.push.apply(params, arguments) <
-          f.length && arguments.length ?
-        _curry.call(context, params) : f.apply(context, params);
-    } : f;
-  };
-  return _curry();
-}
 
 var ctors = {
   on: function(event, selector, delegateSelector){

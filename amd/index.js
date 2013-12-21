@@ -2457,27 +2457,13 @@
 
 },{}],2:[function(require,module,exports){
 var Stream = require('./streams');
+var curry = require('./util').curry;
 
 var events = ('resize blur change focus focusin focusout select submit ' +
   'keydown keyup keypress click dblclick mousedown mouseup ' +
   'mouseover mouseout mouseenter mouseleave').split(' ');
 
 var cap = function(str) {return str.charAt(0).toUpperCase() + str.slice(1)}
-
-//stealing livescript's curry$
-function curry(f, bound){
-  var context,
-  _curry = function(args) {
-    return f.length > 1 ? function(){
-      var params = args ? args.concat() : [];
-      context = bound ? context || this : this;
-      return params.push.apply(params, arguments) <
-          f.length && arguments.length ?
-        _curry.call(context, params) : f.apply(context, params);
-    } : f;
-  };
-  return _curry();
-}
 
 var ctors = {
   on: function(event, selector, delegateSelector){
@@ -2498,13 +2484,22 @@ events.forEach(function(evType) {
 
 module.exports = ctors
 
-},{"./streams":4}],3:[function(require,module,exports){
+},{"./streams":4,"./util":5}],3:[function(require,module,exports){
+var renderCache = {};
+var curry = require('./util').curry;
+
 module.exports = {
   Stream: require('./streams'),
-  $: require('./jquery')
+  $: require('./jquery'),
+
+  //TODO: maybe we should generate streams of html update object
+  //and have them implicitly happen instead.
+  updateHtml: curry(function(selector, html) {
+    return $(selector).html(html);
+  })
 };
 
-},{"./jquery":2,"./streams":4}],4:[function(require,module,exports){
+},{"./jquery":2,"./streams":4,"./util":5}],4:[function(require,module,exports){
 var b = require('baconjs');
 var streamFromBacon = function(baconStream) {
   var delegate = function(method) {
@@ -2563,6 +2558,25 @@ var Stream = function(){
 
 module.exports = Stream
 
-},{"baconjs":1}]},{},[3])
+},{"baconjs":1}],5:[function(require,module,exports){
+
+//stealing livescript's curry$
+function curry(f, bound){
+  var context,
+  _curry = function(args) {
+    return f.length > 1 ? function(){
+      var params = args ? args.concat() : [];
+      context = bound ? context || this : this;
+      return params.push.apply(params, arguments) <
+          f.length && arguments.length ?
+        _curry.call(context, params) : f.apply(context, params);
+    } : f;
+  };
+  return _curry();
+}
+
+module.exports = {curry: curry};
+
+},{}]},{},[3])
 (3)
 });

@@ -1,6 +1,7 @@
 mod = (palace) !->
   const o = it
   const on-ui = palace.$.on
+  {on-always} = palace.$
 
   describe 'palace.$.on' !->
     before-each !->
@@ -28,6 +29,11 @@ mod = (palace) !->
       assert @spy.called-twice, 'two events'
       assert.strictEqual @spy.args[0][0].target, $(\#div2)[0]
       assert.strictEqual @spy.args[1][0].target, $(\#div4)[0]
+
+    o "onAlways delegates to on" !->
+      stub = sinon.stub palace.$, \on
+      on-always \click \c1
+      assert.deepEqual stub.args, [[\click, document, \c1]]
 
 
 if typeof define == \function && jQuery

@@ -15,12 +15,17 @@ function curry(f, bound){
   return _curry();
 }
 
-module.exports = {
+var ctors = {
   on: function(event, selector, delegateSelector){
     var s = Stream();
     $(selector).on(event, delegateSelector, function(e) {
       s.in.push(e);
     });
     return s.stream;
+  },
+  onAlways: function(event, selector) {
+    return ctors.on(event, document, selector);
   }
 }
+
+module.exports = ctors

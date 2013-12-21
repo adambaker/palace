@@ -1,9 +1,10 @@
 (function(){
   var mod;
   mod = function(palace){
-    var o, onUi;
+    var o, onUi, onAlways;
     o = it;
     onUi = palace.$.on;
+    onAlways = palace.$.onAlways;
     describe('palace.$.on', function(){
       beforeEach(function(){
         this.spy = sinon.spy();
@@ -30,6 +31,12 @@
         assert(this.spy.calledTwice, 'two events');
         assert.strictEqual(this.spy.args[0][0].target, $('#div2')[0]);
         assert.strictEqual(this.spy.args[1][0].target, $('#div4')[0]);
+      });
+      o("onAlways delegates to on", function(){
+        var stub;
+        stub = sinon.stub(palace.$, 'on');
+        onAlways('click', 'c1');
+        assert.deepEqual(stub.args, [['click', document, 'c1']]);
       });
     });
   };

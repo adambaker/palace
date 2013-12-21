@@ -2456,11 +2456,40 @@
 }).call(this);
 
 },{}],2:[function(require,module,exports){
+var Stream = require('./streams');
+
+//stealing livescript's curry$
+function curry(f, bound){
+  var context,
+  _curry = function(args) {
+    return f.length > 1 ? function(){
+      var params = args ? args.concat() : [];
+      context = bound ? context || this : this;
+      return params.push.apply(params, arguments) <
+          f.length && arguments.length ?
+        _curry.call(context, params) : f.apply(context, params);
+    } : f;
+  };
+  return _curry();
+}
+
 module.exports = {
-  Stream: require('./streams')
+  on: function(event, selector, delegateSelector){
+    var s = Stream();
+    $(selector).on(event, delegateSelector, function(e) {
+      s.in.push(e);
+    });
+    return s.stream;
+  }
+}
+
+},{"./streams":4}],3:[function(require,module,exports){
+module.exports = {
+  Stream: require('./streams'),
+  $: require('./jquery')
 };
 
-},{"./streams":3}],3:[function(require,module,exports){
+},{"./jquery":2,"./streams":4}],4:[function(require,module,exports){
 var b = require('baconjs');
 var streamFromBacon = function(baconStream) {
   var delegate = function(method) {
@@ -2519,6 +2548,6 @@ var Stream = function(){
 
 module.exports = Stream
 
-},{"baconjs":1}]},{},[2])
-(2)
+},{"baconjs":1}]},{},[3])
+(3)
 });

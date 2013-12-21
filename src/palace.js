@@ -1,3 +1,4 @@
 module.exports = {
-  Stream: require('./streams')
+  Stream: require('./streams'),
+  $: require('./jquery')
 };

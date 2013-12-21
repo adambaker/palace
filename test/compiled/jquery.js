@@ -1,10 +1,13 @@
 (function(){
   var mod;
   mod = function(palace){
-    var o, onUi, onAlways;
+    var o, onUi, onAlways, cap;
     o = it;
     onUi = palace.$.on;
     onAlways = palace.$.onAlways;
+    cap = function(str){
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    };
     describe('palace.$.on', function(){
       beforeEach(function(){
         this.spy = sinon.spy();
@@ -32,11 +35,40 @@
         assert.strictEqual(this.spy.args[0][0].target, $('#div2')[0]);
         assert.strictEqual(this.spy.args[1][0].target, $('#div4')[0]);
       });
-      o("onAlways delegates to on", function(){
-        var stub;
-        stub = sinon.stub(palace.$, 'on');
+    });
+    describe('delegates', function(){
+      beforeEach(function(){
+        this.stub = sinon.stub(palace.$, 'on');
+        this.spy = sinon.spy();
+      });
+      afterEach(function(){
+        var ref$;
+        if (typeof (ref$ = palace.$.on).restore === 'function') {
+          ref$.restore();
+        }
+      });
+      o("delegates to on", function(){
         onAlways('click', 'c1');
-        assert.deepEqual(stub.args, [['click', document, 'c1']]);
+        assert.deepEqual(this.stub.args, [['click', document, 'c1']]);
+      });
+      o("partially applies", function(){
+        assert.isFunction(onAlways('click'));
+      });
+      ['resize', 'blur', 'change', 'focus', 'focusin', 'focusout', 'select', 'submit', 'keydown', 'keyup', 'keypress', 'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave'].forEach(function(evType){
+        var method;
+        method = "all" + cap(evType);
+        o(method + " delegates to onAlways", function(){
+          palace.$[method]('#div1');
+          assert.deepEqual(this.stub.args, [[evType, document, '#div1']]);
+        });
+        o(method + " captures the event", function(){
+          var el;
+          palace.$.on.restore();
+          $('body').append(el = $('<input type="text">'));
+          palace.$[method]('input').each(this.spy);
+          el.trigger(evType);
+          assert(this.spy.calledOnce);
+        });
       });
     });
   };

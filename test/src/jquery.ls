@@ -3,6 +3,8 @@ mod = (palace) !->
   const on-ui = palace.$.on
   {on-always} = palace.$
 
+  const cap = (str) -> str.charAt(0).toUpperCase! + str.slice 1
+
   describe 'palace.$.on' !->
     before-each !->
       @spy = sinon.spy!
@@ -30,11 +32,34 @@ mod = (palace) !->
       assert.strictEqual @spy.args[0][0].target, $(\#div2)[0]
       assert.strictEqual @spy.args[1][0].target, $(\#div4)[0]
 
-    o "onAlways delegates to on" !->
-      stub = sinon.stub palace.$, \on
-      on-always \click \c1
-      assert.deepEqual stub.args, [[\click, document, \c1]]
+  describe 'delegates' !->
+    before-each !->
+      @stub = sinon.stub palace.$, \on
+      @spy = sinon.spy!
+    after-each !-> palace.$.on.restore?!
 
+    o "delegates to on" !->
+      on-always \click \c1
+      assert.deepEqual @stub.args, [[\click, document, \c1]]
+
+    o "partially applies" !->
+      assert.isFunction on-always \click
+
+    <[resize blur change focus focusin focusout select submit keydown keyup
+    keypress click dblclick mousedown mouseup mouseover mouseout
+    mouseenter mouseleave]>.forEach (evType) !->
+      method = "all#{cap evType}"
+
+      o "#{method} delegates to onAlways" !->
+        palace.$[method] \#div1
+        assert.deepEqual @stub.args, [[evType, document, \#div1]]
+
+      o "#{method} captures the event" !->
+        palace.$.on.restore!
+        $('body').append el = $('<input type="text">')
+        palace.$[method](\input).each @spy
+        el.trigger evType
+        assert @spy.called-once
 
 if typeof define == \function && jQuery
   define <[palace]> mod

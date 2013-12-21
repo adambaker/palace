@@ -2458,6 +2458,12 @@
 },{}],2:[function(require,module,exports){
 var Stream = require('./streams');
 
+var events = ('resize blur change focus focusin focusout select submit ' +
+  'keydown keyup keypress click dblclick mousedown mouseup ' +
+  'mouseover mouseout mouseenter mouseleave').split(' ');
+
+var cap = function(str) {return str.charAt(0).toUpperCase() + str.slice(1)}
+
 //stealing livescript's curry$
 function curry(f, bound){
   var context,
@@ -2481,10 +2487,14 @@ var ctors = {
     });
     return s.stream;
   },
-  onAlways: function(event, selector) {
+  onAlways: curry(function(event, selector) {
     return ctors.on(event, document, selector);
-  }
+  })
 }
+
+events.forEach(function(evType) {
+  ctors['all'+cap(evType)] = ctors.onAlways(evType);
+});
 
 module.exports = ctors
 

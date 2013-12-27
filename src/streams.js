@@ -23,7 +23,6 @@ var streamFromBacon = function(baconStream) {
       baconStream.onEnd(endAction(action));
     },
     each: delegate('onValue'),
-    fmap: delegate('map'),
     merge: function() {
       var bus = new b.Bus;
       [].forEach.call(arguments, function(other) {
@@ -45,10 +44,10 @@ var streamFromBacon = function(baconStream) {
       return this.zip.apply(this, streams) .map(function(args){return f.apply(null, args)});
     }
   };
-  'take takeWhile filter'.split(' ').forEach(function(method){
+  'take takeWhile filter map'.split(' ').forEach(function(method){
     stream[method] = delegate(method);
   });
-  stream.map = stream.fmap;
+  stream.fmap = stream.map;
   return stream;
 };
 

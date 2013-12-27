@@ -57,24 +57,6 @@ mod = (Stream) !->
       @in.push(11)
       assert.deepEqual @spy.args, [[3], [12]]
 
-    o 'merge mingles two streams' !->
-      s = Stream!
-      other_in = s.in
-      other = s.stream
-      s = Stream!
-      third_in = s.in
-      third = s.stream
-      merged = @stream.merge other, third
-      merged.each @spy
-      @in.push(2)
-      other_in.push(14)
-      @in.push(11)
-      third_in.push('hi')
-      @in.push(6)
-      other_in.push(8)
-      other_in.push(null)
-      assert.deepEqual @spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]
-
     o 'take n truncates the stream to the first n' !->
       s = @stream.take 2
       s.each @spy
@@ -92,6 +74,55 @@ mod = (Stream) !->
 
     o 'map === fmap' !->
       assert.strictEqual @stream.map, @stream.fmap
+
+    describe 'multi-stream functions' !->
+      before-each !->
+        s = Stream!
+        @other_in = s.in
+        @other = s.stream
+        s = Stream!
+        @third_in = s.in
+        @third = s.stream
+
+      o 'merge mingles two or more streams' !->
+        merged = @stream.merge @other, @third
+        merged.each @spy
+        @in.push(2)
+        @other_in.push(14)
+        @in.push(11)
+        @third_in.push('hi')
+        @in.push(6)
+        @other_in.push(8)
+        @other_in.push(null)
+        assert.deepEqual @spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]
+
+      o 'zip combines streams pairwise' !->
+        zipped = @stream.zip @other, @third
+        zipped.each @spy
+        @in.push(2)
+        @other_in.push(14)
+        @in.push(11)
+        @third_in.push('hi')
+        @in.push(6)
+        @other_in.push(8)
+        @other_in.push(null)
+        @third_in.push(22)
+        assert.deep-equal @spy.args, [[[2, 14, 'hi']], [[11, 8, 22]]]
+
+      o 'zipWith combines streams pairwise with a function' !->
+        zip-fun = sinon.spy (...args) -> return args
+        zipped = @stream.zip-with zip-fun, @other, @third
+        zipped.each @spy
+        @in.push(2)
+        @other_in.push(14)
+        @in.push(11)
+        @third_in.push('hi')
+        @in.push(6)
+        @other_in.push(8)
+        @other_in.push(null)
+        @third_in.push(22)
+        assert.deep-equal zip-fun.args, [[2, 14, 'hi'], [11, 8, 22]]
+        assert.deep-equal @spy.args, [[[2, 14, 'hi']], [[11, 8, 22]]]
 
 if typeof define == \function
   define <[palace]> (palace) !->

@@ -1,5 +1,5 @@
 (function(){
-  var mod;
+  var mod, slice$ = [].slice;
   mod = function(Stream){
     var o;
     o = it;
@@ -75,25 +75,6 @@
         this['in'].push(11);
         assert.deepEqual(this.spy.args, [[3], [12]]);
       });
-      o('merge mingles two streams', function(){
-        var s, other_in, other, third_in, third, merged;
-        s = Stream();
-        other_in = s['in'];
-        other = s.stream;
-        s = Stream();
-        third_in = s['in'];
-        third = s.stream;
-        merged = this.stream.merge(other, third);
-        merged.each(this.spy);
-        this['in'].push(2);
-        other_in.push(14);
-        this['in'].push(11);
-        third_in.push('hi');
-        this['in'].push(6);
-        other_in.push(8);
-        other_in.push(null);
-        assert.deepEqual(this.spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]);
-      });
       o('take n truncates the stream to the first n', function(){
         var s;
         s = this.stream.take(2);
@@ -115,6 +96,64 @@
       });
       o('map === fmap', function(){
         assert.strictEqual(this.stream.map, this.stream.fmap);
+      });
+      describe('multi-stream functions', function(){
+        beforeEach(function(){
+          var s;
+          s = Stream();
+          this.other_in = s['in'];
+          this.other = s.stream;
+          s = Stream();
+          this.third_in = s['in'];
+          this.third = s.stream;
+        });
+        o('merge mingles two or more streams', function(){
+          var merged;
+          merged = this.stream.merge(this.other, this.third);
+          merged.each(this.spy);
+          this['in'].push(2);
+          this.other_in.push(14);
+          this['in'].push(11);
+          this.third_in.push('hi');
+          this['in'].push(6);
+          this.other_in.push(8);
+          this.other_in.push(null);
+          assert.deepEqual(this.spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]);
+        });
+        o('zip combines streams pairwise', function(){
+          var zipped;
+          zipped = this.stream.zip(this.other, this.third);
+          zipped.each(this.spy);
+          this['in'].push(2);
+          this.other_in.push(14);
+          this['in'].push(11);
+          this.third_in.push('hi');
+          this['in'].push(6);
+          this.other_in.push(8);
+          this.other_in.push(null);
+          this.third_in.push(22);
+          assert.deepEqual(this.spy.args, [[[2, 14, 'hi']], [[11, 8, 22]]]);
+        });
+        o('zipWith combines streams pairwise with a function', function(){
+          var zipFun, zipped;
+          zipFun = sinon.spy(function(){
+            var args;
+            args = slice$.call(arguments);
+            return args;
+          });
+          zipped = this.stream.zipWith(zipFun, this.other, this.third);
+          zipped.each(this.spy);
+          this['in'].push(2);
+          this.other_in.push(14);
+          this['in'].push(11);
+          this.third_in.push('hi');
+          this['in'].push(6);
+          this.other_in.push(8);
+          this.other_in.push(null);
+          this.third_in.push(22);
+          assert.deepEqual(zipFun.args, [[2, 14, 'hi'], [11, 8, 22]]);
+          assert.deepEqual(this.spy.args, [[[2, 14, 'hi']], [[11, 8, 22]]]);
+        });
       });
     });
   };

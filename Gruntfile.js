@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     browserify: {
       dest: {
         src: ['src/palace.js'],
-        dest: 'amd/index.js',
+        dest: 'palace.js',
         options: {
           standalone: 'palace'
         }

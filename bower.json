@@ -1,7 +1,7 @@
 {
   "name": "palace",
   "version": "0.0.1",
-  "main": "amd/index.js",
+  "main": "palace.js",
   "dependencies": {
     "requirejs": "2.1.8"
   },

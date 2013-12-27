@@ -2,7 +2,7 @@
   "name": "palace",
   "version": "0.0.0",
   "description": "Functional reactive web application framework.",
-  "main": "cjs/palace.js",
+  "main": "palace.js",
   "scripts": {
     "test": "grunt test"
   },

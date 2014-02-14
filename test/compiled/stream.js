@@ -36,12 +36,9 @@
           this['in'].error('cut this shit out!');
           assert(endSpy.calledOnce, 'called end');
         });
-        o('stops executing after error, calles onError handler', function(){
-          var errSpy, this$ = this;
-          errSpy = sinon.spy(function(){
-            assert(this$.spy.calledOnce, 'only got one value');
-            return assert(this$.spy.calledWith(2), 'value passed through');
-          });
+        o('calls onError handler, continues getting vals', function(){
+          var errSpy;
+          errSpy = sinon.spy();
           this.stream.onEnd(function(){
             return assert(false, 'end after error');
           });
@@ -49,9 +46,9 @@
           this['in'].push(2);
           this['in'].error('cut this shit out!');
           this['in'].push(11);
-          this['in'].end();
           this['in'].error('something else really bad');
-          assert.deepEqual(errSpy.args, [['cut this shit out!']], 'calls onError handler correctly');
+          assert.deepEqual(this.spy.args, [[2], [11]]);
+          assert.deepEqual(errSpy.args, [['cut this shit out!'], ['something else really bad']], 'calls onError handler correctly');
         });
       });
       o('filter only passes through values that pass the predicate', function(){
@@ -154,6 +151,14 @@
           assert.deepEqual(zipFun.args, [[2, 14, 'hi'], [11, 8, 22]]);
           assert.deepEqual(this.spy.args, [[[2, 14, 'hi']], [[11, 8, 22]]]);
         });
+      });
+    });
+    describe('Properties', function(){
+      beforeEach(function(){
+        var ref$;
+        ref$ = Stream(), this['in'] = ref$['in'], this.stream = ref$.stream;
+        this.prop = this.stream.property('starting value');
+        this.spy = sinon.spy();
       });
     });
   };

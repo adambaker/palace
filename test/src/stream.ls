@@ -29,18 +29,18 @@ mod = (Stream) !->
         @in.error 'cut this shit out!'
         assert endSpy.calledOnce, 'called end'
 
-      o 'stops executing after error, calles onError handler' !->
-        errSpy = sinon.spy ~>
-          assert @spy.calledOnce, 'only got one value'
-          assert @spy.calledWith(2), 'value passed through'
+      o 'calls onError handler, continues getting vals' !->
+        errSpy = sinon.spy!
         @stream.onEnd -> assert false, 'end after error'
         @stream.onError errSpy
         @in.push 2
         @in.error 'cut this shit out!'
         @in.push 11
-        @in.end!
         @in.error 'something else really bad'
-        assert.deepEqual errSpy.args, [['cut this shit out!']], 'calls onError handler correctly'
+        assert.deepEqual @spy.args, [[2], [11]]
+        assert.deepEqual errSpy.args,
+          [['cut this shit out!'], ['something else really bad']],
+          'calls onError handler correctly'
 
     o 'filter only passes through values that pass the predicate' !->
       filtered = @stream.filter -> it < 5
@@ -123,6 +123,15 @@ mod = (Stream) !->
         @third_in.push(22)
         assert.deep-equal zip-fun.args, [[2, 14, 'hi'], [11, 8, 22]]
         assert.deep-equal @spy.args, [[[2, 14, 'hi']], [[11, 8, 22]]]
+
+  describe 'Properties' !->
+    before-each !->
+      {@in, @stream} = Stream!
+      @prop = @stream.property 'starting value'
+      @spy = sinon.spy!
+
+    #o "events on the stream change the prop's value" !->
+      #@prop.on-change @spy
 
 if typeof define == \function
   define <[palace]> (palace) !->

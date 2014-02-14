@@ -5850,23 +5850,8 @@ var streamFromBacon = function(baconStream) {
       return streamFromBacon(baconStream[method].apply(baconStream,arguments));
     };
   };
-  var ended = false;
-  var endAction = function(action) {
-    return function(arg) {
-      if(!ended) {
-        ended = true;
-        action(arg);
-      }
-    };
-  };
 
   var stream = {
-    onError: function(action) {
-      baconStream.onError(endAction(action));
-    },
-    onEnd: function(action) {
-      baconStream.onEnd(endAction(action));
-    },
     each: delegate('onValue'),
     merge: function() {
       var bus = new b.Bus;
@@ -5889,7 +5874,7 @@ var streamFromBacon = function(baconStream) {
       return this.zip.apply(this, streams) .map(function(args){return f.apply(null, args)});
     }
   };
-  'take takeWhile filter map'.split(' ').forEach(function(method){
+  'onError onEnd take takeWhile filter map'.split(' ').forEach(function(method){
     stream[method] = delegate(method);
   });
   stream.fmap = stream.map;
@@ -5898,7 +5883,7 @@ var streamFromBacon = function(baconStream) {
 
 var Stream = function(){
   var bus = new b.Bus;
-  bus.endOnError();
+
   return {
     in: {
       push: function(data) {

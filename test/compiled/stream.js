@@ -182,6 +182,6 @@
       mod(palace.Stream);
     });
   } else {
-    mod(require('../../src/streams'));
+    mod(require('../../compiled/streams'));
   }
 }).call(this);

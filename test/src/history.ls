@@ -60,4 +60,4 @@ if typeof define == \function
   define <[palace]> (palace) !->
     mod palace.history
 else
-  mod(require '../../src/history')
+  mod(require '../../compiled/history')

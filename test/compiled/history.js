@@ -64,6 +64,6 @@
       mod(palace.history);
     });
   } else {
-    mod(require('../../src/history'));
+    mod(require('../../compiled/history'));
   }
 }).call(this);

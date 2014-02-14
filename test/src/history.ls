@@ -64,8 +64,22 @@ mod = (palace) !->
      * the evolving value of the palace property.
      */
     describe 'history.js tests, on our property' !->
+      before-each !->
+        @spy = sinon.spy!
+        state.each @spy
+
       o 'starts with a default state from url' !->
         assert.deep-equal state.value, History.normalize-state(states[0])
+
+      o 'gracefully upgrades HTML4 -> HTML5' !->
+        History.setHash(History.getHashByState(states[1]));
+        assert.deep-equal state.value, History.normalize-state(states[1])
+
+      o 'changes with pushState' !->
+        palace.history.push-state states.2.data, states.2.title, states.2.url
+        assert.deep-equal state.value, History.normalize-state(states[2])
+
+
 
 if typeof define == \function
   define <[palace]> (palace) !->

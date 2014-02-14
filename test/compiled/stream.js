@@ -192,7 +192,7 @@
         this['in'].push(10);
         assert.deepEqual(this.spy.args, [['starting value2'], [3], [12]]);
       });
-      o('valueOf returns the current value', function(){
+      o('value, valueOf returns the current value', function(){
         assert.equal(this.prop.valueOf(), 'starting value');
         assert.equal(this.prop.value, 'starting value');
         this['in'].push(12);

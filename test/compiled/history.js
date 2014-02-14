@@ -65,8 +65,20 @@
        * the evolving value of the palace property.
        */
       describe('history.js tests, on our property', function(){
+        beforeEach(function(){
+          this.spy = sinon.spy();
+          state.each(this.spy);
+        });
         o('starts with a default state from url', function(){
           assert.deepEqual(state.value, History.normalizeState(states[0]));
+        });
+        o('gracefully upgrades HTML4 -> HTML5', function(){
+          History.setHash(History.getHashByState(states[1]));
+          assert.deepEqual(state.value, History.normalizeState(states[1]));
+        });
+        o('changes with pushState', function(){
+          palace.history.pushState(states[2].data, states[2].title, states[2].url);
+          assert.deepEqual(state.value, History.normalizeState(states[2]));
         });
       });
     });

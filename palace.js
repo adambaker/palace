@@ -3342,10 +3342,11 @@ if (typeof JSON !== 'object') {
   hist = require('../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history');
   hist = streams();
   History.Adapter.bind(window, 'statechange', function(){
-    return hist.push(History.getState());
+    return hist['in'].push(History.getState());
   });
   module.exports = {
-    state: hist.stream.property(History.getState())
+    state: hist.stream.property(History.getState()),
+    pushState: History.pushState
   };
 }).call(this);
 

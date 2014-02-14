@@ -1,5 +1,5 @@
 module.exports = {
-  Stream: require('./streams')
+  streams: require('./streams')
   $: require('./jquery')
   history: require('./history')
 

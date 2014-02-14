@@ -49,15 +49,22 @@ states = {
   }
 }
 
-mod = (history) !->
+mod = (palace) !->
   const o = it
+  state = palace.history.state
 
   describe 'palace.history' !->
-    o 'it loads the history' !->
+    o 'loads the history' !->
       assert(window.History);
+
+    o 'exports a history state property' !->
+      assert palace.streams.is-property state
+
+    o 'starts with a default state from url' !->
+      assert.deep-equal state.value, History.normalize-state(states[0])
 
 if typeof define == \function
   define <[palace]> (palace) !->
-    mod palace.history
+    mod palace
 else
-  mod(require '../../compiled/history')
+  mod(require '../../compiled/palace')

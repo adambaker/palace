@@ -3337,9 +3337,16 @@ if (typeof JSON !== 'object') {
 
 },{}],2:[function(require,module,exports){
 (function(){
-  var stream, hist;
-  stream = require('./streams');
+  var streams, hist;
+  streams = require('./streams');
   hist = require('../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history');
+  hist = streams();
+  History.Adapter.bind(window, 'statechange', function(){
+    return hist.push(History.getState());
+  });
+  module.exports = {
+    state: hist.stream.property(History.getState())
+  };
 }).call(this);
 
 },{"../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history":1,"./streams":5}],3:[function(require,module,exports){
@@ -3385,7 +3392,7 @@ if (typeof JSON !== 'object') {
 },{"./streams":5}],4:[function(require,module,exports){
 (function(){
   module.exports = {
-    Stream: require('./streams'),
+    streams: require('./streams'),
     $: require('./jquery'),
     history: require('./history'),
     updateHtml: curry$(function(selector, html){

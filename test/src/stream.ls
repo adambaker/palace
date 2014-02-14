@@ -166,6 +166,6 @@ mod = (stream) !->
 
 if typeof define == \function
   define <[palace]> (palace) !->
-    mod palace.Stream
+    mod palace.streams
 else
   mod(require '../../compiled/streams')

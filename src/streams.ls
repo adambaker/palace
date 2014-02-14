@@ -1,37 +1,41 @@
 const b = require('baconjs')
 
-delegate = (method) ->
-  -> streamFromBacon(@__bacon[method].apply(@__bacon, &))
+stream-from-bacon = -> stream-proto with __bacon: it
+prop-from-bacon = -> prop-proto with __bacon: it
+
+delegate = (method, ctor = (->it) ) ->
+  -> ctor(@__bacon[method].apply(@__bacon, &))
 
 stream-proto = {
-  each: delegate('onValue')
+  each: delegate \onValue
+  onEnd: delegate \onEnd
+  onError: delegate \onError
   merge: (...others) ->
     bus = new b.Bus!
     bus.plug @__bacon
     others.forEach -> bus.plug it.__bacon
-    streamFromBacon bus
+    stream-from-bacon bus
   zip: (...others) ->
     baconStreams = [@__bacon] ++ others.map -> it.__bacon
-    streamFromBacon(b.zipAsArray baconStreams)
+    stream-from-bacon(b.zipAsArray baconStreams)
   zipWith: (f, ...streams) ->
     @zip.apply(@, streams).map(-> f.apply(null, it))
   property: (initial) ->
     propFromBacon @__bacon.toProperty(initial)
 }
-<[onError onEnd take takeWhile filter map]>.forEach((method) ->
-  stream-proto[method] = delegate(method)
+<[take takeWhile filter map]>.forEach((method) ->
+  stream-proto[method] = delegate(method, stream-from-bacon)
 )
 stream-proto.fmap = stream-proto.map
 
 prop-proto = {
-  on-change: delegate('onValue')
+  on-change: delegate \onValue
+  changes: delegate \changes, stream-from-bacon
 }
-<[changes]>.forEach((method) ->
-  prop-proto[method] = delegate(method)
-)
 
-streamFromBacon = -> stream-proto with __bacon: it
-propFromBacon = -> prop-proto with __bacon: it
+<[map]>.forEach((method) ->
+  prop-proto[method] = delegate(method, prop-from-bacon)
+)
 
 stream = ->
   bus = new b.Bus!
@@ -44,5 +48,8 @@ stream = ->
     }
     stream: streamFromBacon bus
   }
+
+stream.is-stream = -> Object.get-prototype-of(it) == stream-proto
+stream.is-property = -> Object.get-prototype-of(it) == prop-proto
 
 module.exports = stream

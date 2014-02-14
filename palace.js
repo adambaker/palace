@@ -3409,15 +3409,28 @@ if (typeof JSON !== 'object') {
 
 },{"./history":2,"./jquery":3,"./streams":5}],5:[function(require,module,exports){
 (function(){
-  var b, delegate, streamProto, propProto, streamFromBacon, propFromBacon, stream, slice$ = [].slice;
+  var b, streamFromBacon, propFromBacon, delegate, streamProto, propProto, stream, slice$ = [].slice;
   b = require('baconjs');
-  delegate = function(method){
+  streamFromBacon = function(it){
+    var ref$;
+    return ref$ = clone$(streamProto), ref$.__bacon = it, ref$;
+  };
+  propFromBacon = function(it){
+    var ref$;
+    return ref$ = clone$(propProto), ref$.__bacon = it, ref$;
+  };
+  delegate = function(method, ctor){
+    ctor == null && (ctor = function(it){
+      return it;
+    });
     return function(){
-      return streamFromBacon(this.__bacon[method].apply(this.__bacon, arguments));
+      return ctor(this.__bacon[method].apply(this.__bacon, arguments));
     };
   };
   streamProto = {
     each: delegate('onValue'),
+    onEnd: delegate('onEnd'),
+    onError: delegate('onError'),
     merge: function(){
       var others, bus;
       others = slice$.call(arguments);
@@ -3447,24 +3460,17 @@ if (typeof JSON !== 'object') {
       return propFromBacon(this.__bacon.toProperty(initial));
     }
   };
-  ['onError', 'onEnd', 'take', 'takeWhile', 'filter', 'map'].forEach(function(method){
-    return streamProto[method] = delegate(method);
+  ['take', 'takeWhile', 'filter', 'map'].forEach(function(method){
+    return streamProto[method] = delegate(method, streamFromBacon);
   });
   streamProto.fmap = streamProto.map;
   propProto = {
-    onChange: delegate('onValue')
+    onChange: delegate('onValue'),
+    changes: delegate('changes', streamFromBacon)
   };
-  ['changes'].forEach(function(method){
-    return propProto[method] = delegate(method);
+  ['map'].forEach(function(method){
+    return propProto[method] = delegate(method, propFromBacon);
   });
-  streamFromBacon = function(it){
-    var ref$;
-    return ref$ = clone$(streamProto), ref$.__bacon = it, ref$;
-  };
-  propFromBacon = function(it){
-    var ref$;
-    return ref$ = clone$(propProto), ref$.__bacon = it, ref$;
-  };
   stream = function(){
     var bus;
     bus = new b.Bus();
@@ -3482,6 +3488,12 @@ if (typeof JSON !== 'object') {
       },
       stream: streamFromBacon(bus)
     };
+  };
+  stream.isStream = function(it){
+    return Object.getPrototypeOf(it) === streamProto;
+  };
+  stream.isProperty = function(it){
+    return Object.getPrototypeOf(it) === propProto;
   };
   module.exports = stream;
   function clone$(it){

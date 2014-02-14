@@ -1,10 +1,14 @@
-mod = (Stream) !->
+mod = (stream) !->
   const o = it
 
-  describe 'Stream' !->
+  describe 'stream' !->
     before-each !->
-      {@in, @stream} = Stream!
+      {@in, @stream} = stream!
       @spy = sinon.spy!
+
+    o 'isStream is true, isProperty is false' !->
+      assert stream.is-stream @stream
+      assert !stream.is-property @stream
 
     describe 'each' !->
       before-each !->
@@ -77,10 +81,10 @@ mod = (Stream) !->
 
     describe 'multi-stream functions' !->
       before-each !->
-        s = Stream!
+        s = stream!
         @other_in = s.in
         @other = s.stream
-        s = Stream!
+        s = stream!
         @third_in = s.in
         @third = s.stream
 
@@ -126,7 +130,7 @@ mod = (Stream) !->
 
   describe 'Properties' !->
     before-each !->
-      {@in, @stream} = Stream!
+      {@in, @stream} = stream!
       @prop = @stream.property 'starting value'
       @spy = sinon.spy!
 
@@ -134,7 +138,6 @@ mod = (Stream) !->
       @prop.on-change @spy
       @in.push 12
       @in.push \fool
-      console.log @spy.args
       assert.deep-equal @spy.args, [['starting value'], [12], [\fool]]
 
     o 'changes produces a stream of changes' !->
@@ -143,6 +146,13 @@ mod = (Stream) !->
       @in.push 12
       @in.push \fool
       assert.deep-equal @spy.args, [[12], [\fool]]
+
+    o 'map derives a new property' !->
+      mapped = @prop.map(-> it + 2)
+      mapped.on-change @spy
+      @in.push 1
+      @in.push 10
+      assert.deep-equal @spy.args, [['starting value2'], [3], [12]]
 
 if typeof define == \function
   define <[palace]> (palace) !->

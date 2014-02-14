@@ -1,13 +1,17 @@
 (function(){
   var mod, slice$ = [].slice;
-  mod = function(Stream){
+  mod = function(stream){
     var o;
     o = it;
-    describe('Stream', function(){
+    describe('stream', function(){
       beforeEach(function(){
         var ref$;
-        ref$ = Stream(), this['in'] = ref$['in'], this.stream = ref$.stream;
+        ref$ = stream(), this['in'] = ref$['in'], this.stream = ref$.stream;
         this.spy = sinon.spy();
+      });
+      o('isStream is true, isProperty is false', function(){
+        assert(stream.isStream(this.stream));
+        assert(!stream.isProperty(this.stream));
       });
       describe('each', function(){
         beforeEach(function(){
@@ -97,10 +101,10 @@
       describe('multi-stream functions', function(){
         beforeEach(function(){
           var s;
-          s = Stream();
+          s = stream();
           this.other_in = s['in'];
           this.other = s.stream;
-          s = Stream();
+          s = stream();
           this.third_in = s['in'];
           this.third = s.stream;
         });
@@ -156,7 +160,7 @@
     describe('Properties', function(){
       beforeEach(function(){
         var ref$;
-        ref$ = Stream(), this['in'] = ref$['in'], this.stream = ref$.stream;
+        ref$ = stream(), this['in'] = ref$['in'], this.stream = ref$.stream;
         this.prop = this.stream.property('starting value');
         this.spy = sinon.spy();
       });
@@ -164,7 +168,6 @@
         this.prop.onChange(this.spy);
         this['in'].push(12);
         this['in'].push('fool');
-        console.log(this.spy.args);
         assert.deepEqual(this.spy.args, [['starting value'], [12], ['fool']]);
       });
       o('changes produces a stream of changes', function(){
@@ -174,6 +177,16 @@
         this['in'].push(12);
         this['in'].push('fool');
         assert.deepEqual(this.spy.args, [[12], ['fool']]);
+      });
+      o('map derives a new property', function(){
+        var mapped;
+        mapped = this.prop.map(function(it){
+          return it + 2;
+        });
+        mapped.onChange(this.spy);
+        this['in'].push(1);
+        this['in'].push(10);
+        assert.deepEqual(this.spy.args, [['starting value2'], [3], [12]]);
       });
     });
   };

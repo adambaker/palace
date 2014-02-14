@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     browserify: {
       dest: {
-        src: ['src/palace.js'],
+        src: ['compiled/palace.js'],
         dest: 'palace.js',
         options: {
           standalone: 'palace'
@@ -11,11 +11,18 @@ module.exports = function(grunt) {
       }
     },
     livescript: {
-      src: {
+      test: {
         expand: true,
         flatten: true,
         src: ['test/src/*.ls'],
         dest: 'test/compiled/',
+        ext: '.js'
+      },
+      src: {
+        expand: true,
+        flatten: true,
+        src: ['src/*.ls'],
+        dest: 'compiled/',
         ext: '.js'
       }
     },
@@ -28,7 +35,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
   grunt.loadNpmTasks('grunt-livescript');
 
-  grunt.registerTask('build', ['browserify']);
-  grunt.registerTask('test', ['build', 'livescript', 'mocha_phantomjs']);
+  grunt.registerTask('build', ['livescript:src', 'browserify']);
+  grunt.registerTask('test', ['build', 'livescript:test', 'mocha_phantomjs']);
   grunt.registerTask('default', ['test']);
 };

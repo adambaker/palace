@@ -3336,6 +3336,153 @@ if (typeof JSON !== 'object') {
 })(window);
 
 },{}],2:[function(require,module,exports){
+(function(){
+  var stream, hist;
+  stream = require('./streams');
+  hist = require('../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history');
+}).call(this);
+
+},{"../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history":1,"./streams":5}],3:[function(require,module,exports){
+(function(){
+  var stream, events, cap, ctors;
+  stream = require('./streams');
+  events = ['resize', 'blur', 'change', 'focus', 'focusin', 'focusout', 'select', 'submit', 'keydown', 'keyup', 'keypress', 'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave'];
+  cap = function(str){
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  ctors = {
+    on: function(event, selector, delegateSelector){
+      var s;
+      s = stream();
+      $(selector).on(event, delegateSelector, function(e){
+        s['in'].push(e);
+      });
+      return s.stream;
+    },
+    onAlways: curry$(function(event, selector){
+      return ctors.on(event, document, selector);
+    })
+  };
+  events.forEach(function(evType){
+    return ctors['all' + cap(evType)] = ctors.onAlways(evType);
+  });
+  module.exports = ctors;
+  function curry$(f, bound){
+    var context,
+    _curry = function(args) {
+      return f.length > 1 ? function(){
+        var params = args ? args.concat() : [];
+        context = bound ? context || this : this;
+        return params.push.apply(params, arguments) <
+            f.length && arguments.length ?
+          _curry.call(context, params) : f.apply(context, params);
+      } : f;
+    };
+    return _curry();
+  }
+}).call(this);
+
+},{"./streams":5}],4:[function(require,module,exports){
+(function(){
+  module.exports = {
+    Stream: require('./streams'),
+    $: require('./jquery'),
+    history: require('./history'),
+    updateHtml: curry$(function(selector, html){
+      return $(selector).html(html);
+    })
+  };
+  function curry$(f, bound){
+    var context,
+    _curry = function(args) {
+      return f.length > 1 ? function(){
+        var params = args ? args.concat() : [];
+        context = bound ? context || this : this;
+        return params.push.apply(params, arguments) <
+            f.length && arguments.length ?
+          _curry.call(context, params) : f.apply(context, params);
+      } : f;
+    };
+    return _curry();
+  }
+}).call(this);
+
+},{"./history":2,"./jquery":3,"./streams":5}],5:[function(require,module,exports){
+(function(){
+  var b, streamFromBacon, stream, slice$ = [].slice;
+  b = require('baconjs');
+  streamFromBacon = function(baconStream){
+    var delegate, stream;
+    delegate = function(method){
+      return function(){
+        return streamFromBacon(baconStream[method].apply(baconStream, arguments));
+      };
+    };
+    stream = {
+      each: delegate('onValue'),
+      merge: function(){
+        var others, bus;
+        others = slice$.call(arguments);
+        bus = new b.Bus();
+        others.forEach(function(it){
+          it.each(function(it){
+            bus.push(it);
+          });
+        });
+        return streamFromBacon(baconStream.merge(bus));
+      },
+      zip: function(){
+        var others, baconStreams;
+        others = slice$.call(arguments);
+        baconStreams = [baconStream];
+        others.forEach(function(other){
+          var bus;
+          bus = new b.Bus();
+          other.each(function(data){
+            bus.push(data);
+          });
+          baconStreams.push(bus);
+        });
+        return streamFromBacon(b.zipAsArray(baconStreams));
+      },
+      zipWith: function(f){
+        var streams;
+        streams = slice$.call(arguments, 1);
+        return this.zip.apply(this, streams).map(function(){
+          var args;
+          args = slice$.call(arguments);
+          return f(args);
+        });
+      }
+    };
+    ['onError', 'onEnd', 'take', 'takeWhile', 'filter', 'map'].forEach(function(method){
+      return stream[method] = delegate(method);
+    });
+    stream.fmap = stream.map;
+    return stream;
+  };
+  stream = function(){
+    var bus;
+    bus = new b.Bus();
+    return {
+      'in': {
+        push: function(it){
+          return bus.push(it);
+        },
+        end: function(){
+          return bus.end();
+        },
+        error: function(it){
+          return bus.error(it);
+        }
+      },
+      stream: streamFromBacon(bus)
+    };
+  };
+  module.exports = stream;
+}).call(this);
+
+},{"baconjs":6}],6:[function(require,module,exports){
 (function() {
   var Bacon, Bus, CompositeUnsubscribe, Dispatcher, End, Error, Event, EventStream, Initial, Next, None, Observable, Property, PropertyDispatcher, PropertyTransaction, Some, Source, addPropertyInitValueToStream, assert, assertArray, assertEvent, assertEventStream, assertFunction, assertNoArguments, assertString, cloneArray, compositeUnsubscribe, convertArgsToFunction, end, former, indexOf, initial, isFieldKey, isFunction, latterF, liftCallback, makeFunction, makeFunctionArgs, makeFunction_, makeSpawner, next, nop, partiallyApplied, toCombinator, toEvent, toFieldExtractor, toFieldKey, toOption, toSimpleExtractor, withMethodCallSupport, _, _ref, _ref1, _ref2,
     __slice = [].slice,
@@ -5792,131 +5939,6 @@ if (typeof JSON !== 'object') {
 
 }).call(this);
 
-},{}],3:[function(require,module,exports){
-var stream = require('./streams');
-require('../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history')
-
-
-},{"../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history":1,"./streams":6}],4:[function(require,module,exports){
-var Stream = require('./streams');
-var curry = require('./util').curry;
-
-var events = ('resize blur change focus focusin focusout select submit ' +
-  'keydown keyup keypress click dblclick mousedown mouseup ' +
-  'mouseover mouseout mouseenter mouseleave').split(' ');
-
-var cap = function(str) {return str.charAt(0).toUpperCase() + str.slice(1)}
-
-var ctors = {
-  on: function(event, selector, delegateSelector){
-    var s = Stream();
-    $(selector).on(event, delegateSelector, function(e) {
-      s.in.push(e);
-    });
-    return s.stream;
-  },
-  onAlways: curry(function(event, selector) {
-    return ctors.on(event, document, selector);
-  })
-}
-
-events.forEach(function(evType) {
-  ctors['all'+cap(evType)] = ctors.onAlways(evType);
-});
-
-module.exports = ctors
-
-},{"./streams":6,"./util":7}],5:[function(require,module,exports){
-var renderCache = {};
-var curry = require('./util').curry;
-
-module.exports = {
-  Stream: require('./streams'),
-  $: require('./jquery'),
-  history: require('./history'),
-
-  //TODO: maybe we should generate streams of html update object
-  //and have them implicitly happen instead.
-  updateHtml: curry(function(selector, html) {
-    return $(selector).html(html);
-  })
-};
-
-},{"./history":3,"./jquery":4,"./streams":6,"./util":7}],6:[function(require,module,exports){
-var b = require('baconjs');
-var streamFromBacon = function(baconStream) {
-  var delegate = function(method) {
-    return function(){
-      return streamFromBacon(baconStream[method].apply(baconStream,arguments));
-    };
-  };
-
-  var stream = {
-    each: delegate('onValue'),
-    merge: function() {
-      var bus = new b.Bus;
-      [].forEach.call(arguments, function(other) {
-        other.each(function(data){bus.push(data)});
-      });
-      return streamFromBacon(baconStream.merge(bus));
-    },
-    zip: function() {
-      var baconStreams = [baconStream];
-      [].forEach.call(arguments, function(other) {
-        var bus = new b.Bus;
-        other.each(function(data){bus.push(data)});
-        baconStreams.push(bus);
-      });
-      return streamFromBacon(b.zipAsArray(baconStreams));
-    },
-    zipWith: function() {
-      var f = arguments[0], streams = [].slice.call(arguments, 1);
-      return this.zip.apply(this, streams) .map(function(args){return f.apply(null, args)});
-    }
-  };
-  'onError onEnd take takeWhile filter map'.split(' ').forEach(function(method){
-    stream[method] = delegate(method);
-  });
-  stream.fmap = stream.map;
-  return stream;
-};
-
-var Stream = function(){
-  var bus = new b.Bus;
-
-  return {
-    in: {
-      push: function(data) {
-        bus.push(data)
-      },
-      end: function(){bus.end()},
-      error: function(err) {bus.error(err)}
-    },
-    stream: streamFromBacon(bus)
-  }
-};
-
-module.exports = Stream
-
-},{"baconjs":2}],7:[function(require,module,exports){
-
-//stealing livescript's curry$
-function curry(f, bound){
-  var context,
-  _curry = function(args) {
-    return f.length > 1 ? function(){
-      var params = args ? args.concat() : [];
-      context = bound ? context || this : this;
-      return params.push.apply(params, arguments) <
-          f.length && arguments.length ?
-        _curry.call(context, params) : f.apply(context, params);
-    } : f;
-  };
-  return _curry();
-}
-
-module.exports = {curry: curry};
-
-},{}]},{},[5])
-(5)
+},{}]},{},[4])
+(4)
 });

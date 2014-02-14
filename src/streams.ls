@@ -26,6 +26,9 @@ stream-proto.fmap = stream-proto.map
 prop-proto = {
   on-change: delegate('onValue')
 }
+<[changes]>.forEach((method) ->
+  prop-proto[method] = delegate(method)
+)
 
 streamFromBacon = -> stream-proto with __bacon: it
 propFromBacon = -> prop-proto with __bacon: it

@@ -3454,6 +3454,9 @@ if (typeof JSON !== 'object') {
   propProto = {
     onChange: delegate('onValue')
   };
+  ['changes'].forEach(function(method){
+    return propProto[method] = delegate(method);
+  });
   streamFromBacon = function(it){
     var ref$;
     return ref$ = clone$(streamProto), ref$.__bacon = it, ref$;

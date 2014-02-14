@@ -137,6 +137,13 @@ mod = (Stream) !->
       console.log @spy.args
       assert.deep-equal @spy.args, [['starting value'], [12], [\fool]]
 
+    o 'changes produces a stream of changes' !->
+      changes = @prop.changes!
+      changes.each @spy
+      @in.push 12
+      @in.push \fool
+      assert.deep-equal @spy.args, [[12], [\fool]]
+
 if typeof define == \function
   define <[palace]> (palace) !->
     mod palace.Stream

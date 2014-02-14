@@ -1,21 +1,19 @@
 const b = require('baconjs')
-streamFromBacon = (baconStream) ->
-  delegate = (method) ->
-    -> streamFromBacon(baconStream[method].apply(baconStream, &))
 
+delegate = (method) ->
+  -> streamFromBacon(@__bacon-stream[method].apply(@__bacon-stream, &))
+
+streamFromBacon = (baconStream) ->
   stream = {
+    __bacon-stream: bacon-stream
     each: delegate('onValue')
     merge: (...others) ->
       bus = new b.Bus!
-      others.forEach(!->it.each(!-> bus.push(it)))
-      streamFromBacon(baconStream.merge(bus))
+      bus.plug @__bacon-stream
+      others.forEach -> bus.plug it.__bacon-stream
+      streamFromBacon bus
     zip: (...others) ->
-      baconStreams = [baconStream]
-      others.forEach((other) !->
-        bus = new b.Bus!
-        other.each((data) !-> bus.push(data))
-        baconStreams.push bus
-      )
+      baconStreams = [baconStream] ++ others.map -> it.__bacon-stream
       streamFromBacon(b.zipAsArray baconStreams)
     zipWith: (f, ...streams) ->
       @zip.apply(@, streams).map(-> f.apply(null, it))

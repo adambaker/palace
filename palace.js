@@ -3409,49 +3409,48 @@ if (typeof JSON !== 'object') {
 
 },{"./history":2,"./jquery":3,"./streams":5}],5:[function(require,module,exports){
 (function(){
-  var b, delegate, streamFromBacon, stream, slice$ = [].slice;
+  var b, delegate, streamProto, streamFromBacon, stream, slice$ = [].slice;
   b = require('baconjs');
   delegate = function(method){
     return function(){
-      return streamFromBacon(this.__baconStream[method].apply(this.__baconStream, arguments));
+      return streamFromBacon(this.__bacon[method].apply(this.__bacon, arguments));
     };
   };
-  streamFromBacon = function(baconStream){
-    var stream;
-    stream = {
-      __baconStream: baconStream,
-      each: delegate('onValue'),
-      merge: function(){
-        var others, bus;
-        others = slice$.call(arguments);
-        bus = new b.Bus();
-        bus.plug(this.__baconStream);
-        others.forEach(function(it){
-          return bus.plug(it.__baconStream);
-        });
-        return streamFromBacon(bus);
-      },
-      zip: function(){
-        var others, baconStreams;
-        others = slice$.call(arguments);
-        baconStreams = [baconStream].concat(others.map(function(it){
-          return it.__baconStream;
-        }));
-        return streamFromBacon(b.zipAsArray(baconStreams));
-      },
-      zipWith: function(f){
-        var streams;
-        streams = slice$.call(arguments, 1);
-        return this.zip.apply(this, streams).map(function(it){
-          return f.apply(null, it);
-        });
-      }
-    };
-    ['onError', 'onEnd', 'take', 'takeWhile', 'filter', 'map'].forEach(function(method){
-      return stream[method] = delegate(method);
-    });
-    stream.fmap = stream.map;
-    return stream;
+  streamProto = {
+    each: delegate('onValue'),
+    merge: function(){
+      var others, bus;
+      others = slice$.call(arguments);
+      bus = new b.Bus();
+      bus.plug(this.__bacon);
+      others.forEach(function(it){
+        return bus.plug(it.__bacon);
+      });
+      return streamFromBacon(bus);
+    },
+    zip: function(){
+      var others, baconStreams;
+      others = slice$.call(arguments);
+      baconStreams = [this.__bacon].concat(others.map(function(it){
+        return it.__bacon;
+      }));
+      return streamFromBacon(b.zipAsArray(baconStreams));
+    },
+    zipWith: function(f){
+      var streams;
+      streams = slice$.call(arguments, 1);
+      return this.zip.apply(this, streams).map(function(it){
+        return f.apply(null, it);
+      });
+    }
+  };
+  ['onError', 'onEnd', 'take', 'takeWhile', 'filter', 'map'].forEach(function(method){
+    return streamProto[method] = delegate(method);
+  });
+  streamProto.fmap = streamProto.map;
+  streamFromBacon = function(it){
+    var ref$;
+    return ref$ = clone$(streamProto), ref$.__bacon = it, ref$;
   };
   stream = function(){
     var bus;
@@ -3472,6 +3471,10 @@ if (typeof JSON !== 'object') {
     };
   };
   module.exports = stream;
+  function clone$(it){
+    function fun(){} fun.prototype = it;
+    return new fun;
+  }
 }).call(this);
 
 },{"baconjs":6}],6:[function(require,module,exports){

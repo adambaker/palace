@@ -1,28 +1,27 @@
 const b = require('baconjs')
 
 delegate = (method) ->
-  -> streamFromBacon(@__bacon-stream[method].apply(@__bacon-stream, &))
+  -> streamFromBacon(@__bacon[method].apply(@__bacon, &))
 
-streamFromBacon = (baconStream) ->
-  stream = {
-    __bacon-stream: bacon-stream
-    each: delegate('onValue')
-    merge: (...others) ->
-      bus = new b.Bus!
-      bus.plug @__bacon-stream
-      others.forEach -> bus.plug it.__bacon-stream
-      streamFromBacon bus
-    zip: (...others) ->
-      baconStreams = [baconStream] ++ others.map -> it.__bacon-stream
-      streamFromBacon(b.zipAsArray baconStreams)
-    zipWith: (f, ...streams) ->
-      @zip.apply(@, streams).map(-> f.apply(null, it))
-  }
-  <[onError onEnd take takeWhile filter map]>.forEach((method) ->
-    stream[method] = delegate(method)
-  )
-  stream.fmap = stream.map
-  stream
+stream-proto = {
+  each: delegate('onValue')
+  merge: (...others) ->
+    bus = new b.Bus!
+    bus.plug @__bacon
+    others.forEach -> bus.plug it.__bacon
+    streamFromBacon bus
+  zip: (...others) ->
+    baconStreams = [@__bacon] ++ others.map -> it.__bacon
+    streamFromBacon(b.zipAsArray baconStreams)
+  zipWith: (f, ...streams) ->
+    @zip.apply(@, streams).map(-> f.apply(null, it))
+}
+<[onError onEnd take takeWhile filter map]>.forEach((method) ->
+  stream-proto[method] = delegate(method)
+)
+stream-proto.fmap = stream-proto.map
+
+streamFromBacon = -> stream-proto with __bacon: it
 
 stream = ->
   bus = new b.Bus!

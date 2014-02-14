@@ -164,6 +164,10 @@
         this.prop = this.stream.property('starting value');
         this.spy = sinon.spy();
       });
+      o('isProperty is true, isStream is false', function(){
+        assert(stream.isProperty(this.prop));
+        assert(!stream.isStream(this.prop));
+      });
       o("events on the stream change the prop's value", function(){
         this.prop.onChange(this.spy);
         this['in'].push(12);
@@ -187,6 +191,13 @@
         this['in'].push(1);
         this['in'].push(10);
         assert.deepEqual(this.spy.args, [['starting value2'], [3], [12]]);
+      });
+      o('valueOf returns the current value', function(){
+        assert.equal(this.prop.valueOf(), 'starting value');
+        this['in'].push(12);
+        assert.equal(this.prop.valueOf(), 12);
+        this['in'].push('fool');
+        assert.equal(this.prop.valueOf(), 'fool');
       });
     });
   };

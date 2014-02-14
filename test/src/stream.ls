@@ -134,6 +134,9 @@ mod = (stream) !->
       @prop = @stream.property 'starting value'
       @spy = sinon.spy!
 
+    o 'isProperty is true, isStream is false' !->
+      assert stream.is-property(@prop)
+      assert !stream.is-stream(@prop)
     o "events on the stream change the prop's value" !->
       @prop.on-change @spy
       @in.push 12
@@ -153,6 +156,13 @@ mod = (stream) !->
       @in.push 1
       @in.push 10
       assert.deep-equal @spy.args, [['starting value2'], [3], [12]]
+
+    o 'valueOf returns the current value' !->
+      assert.equal @prop.value-of!, 'starting value'
+      @in.push 12
+      assert.equal @prop.value-of!, 12
+      @in.push \fool
+      assert.equal @prop.value-of!, \fool
 
 if typeof define == \function
   define <[palace]> (palace) !->

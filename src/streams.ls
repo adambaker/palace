@@ -1,7 +1,10 @@
 const b = require('baconjs')
 
 stream-from-bacon = -> stream-proto with __bacon: it
-prop-from-bacon = -> prop-proto with __bacon: it
+prop-from-bacon = ->
+  prop = prop-proto with __bacon: it
+  it.onValue (val) -> prop.value = val
+  prop
 
 delegate = (method, ctor = (->it) ) ->
   -> ctor(@__bacon[method].apply(@__bacon, &))
@@ -31,6 +34,7 @@ stream-proto.fmap = stream-proto.map
 prop-proto = {
   on-change: delegate \onValue
   changes: delegate \changes, stream-from-bacon
+  value-of: -> @value
 }
 
 <[map]>.forEach((method) ->

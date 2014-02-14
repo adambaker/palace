@@ -3416,8 +3416,12 @@ if (typeof JSON !== 'object') {
     return ref$ = clone$(streamProto), ref$.__bacon = it, ref$;
   };
   propFromBacon = function(it){
-    var ref$;
-    return ref$ = clone$(propProto), ref$.__bacon = it, ref$;
+    var prop, ref$;
+    prop = (ref$ = clone$(propProto), ref$.__bacon = it, ref$);
+    it.onValue(function(val){
+      return prop.value = val;
+    });
+    return prop;
   };
   delegate = function(method, ctor){
     ctor == null && (ctor = function(it){
@@ -3466,7 +3470,10 @@ if (typeof JSON !== 'object') {
   streamProto.fmap = streamProto.map;
   propProto = {
     onChange: delegate('onValue'),
-    changes: delegate('changes', streamFromBacon)
+    changes: delegate('changes', streamFromBacon),
+    valueOf: function(){
+      return this.value;
+    }
   };
   ['map'].forEach(function(method){
     return propProto[method] = delegate(method, propFromBacon);

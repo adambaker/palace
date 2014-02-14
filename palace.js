@@ -3409,7 +3409,7 @@ if (typeof JSON !== 'object') {
 
 },{"./history":2,"./jquery":3,"./streams":5}],5:[function(require,module,exports){
 (function(){
-  var b, delegate, streamProto, streamFromBacon, stream, slice$ = [].slice;
+  var b, delegate, streamProto, propProto, streamFromBacon, propFromBacon, stream, slice$ = [].slice;
   b = require('baconjs');
   delegate = function(method){
     return function(){
@@ -3442,15 +3442,25 @@ if (typeof JSON !== 'object') {
       return this.zip.apply(this, streams).map(function(it){
         return f.apply(null, it);
       });
+    },
+    property: function(initial){
+      return propFromBacon(this.__bacon.toProperty(initial));
     }
   };
   ['onError', 'onEnd', 'take', 'takeWhile', 'filter', 'map'].forEach(function(method){
     return streamProto[method] = delegate(method);
   });
   streamProto.fmap = streamProto.map;
+  propProto = {
+    onChange: delegate('onValue')
+  };
   streamFromBacon = function(it){
     var ref$;
     return ref$ = clone$(streamProto), ref$.__bacon = it, ref$;
+  };
+  propFromBacon = function(it){
+    var ref$;
+    return ref$ = clone$(propProto), ref$.__bacon = it, ref$;
   };
   stream = function(){
     var bus;

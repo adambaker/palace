@@ -130,8 +130,12 @@ mod = (Stream) !->
       @prop = @stream.property 'starting value'
       @spy = sinon.spy!
 
-    #o "events on the stream change the prop's value" !->
-      #@prop.on-change @spy
+    o "events on the stream change the prop's value" !->
+      @prop.on-change @spy
+      @in.push 12
+      @in.push \fool
+      console.log @spy.args
+      assert.deep-equal @spy.args, [['starting value'], [12], [\fool]]
 
 if typeof define == \function
   define <[palace]> (palace) !->

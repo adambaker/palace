@@ -15,13 +15,20 @@ stream-proto = {
     streamFromBacon(b.zipAsArray baconStreams)
   zipWith: (f, ...streams) ->
     @zip.apply(@, streams).map(-> f.apply(null, it))
+  property: (initial) ->
+    propFromBacon @__bacon.toProperty(initial)
 }
 <[onError onEnd take takeWhile filter map]>.forEach((method) ->
   stream-proto[method] = delegate(method)
 )
 stream-proto.fmap = stream-proto.map
 
+prop-proto = {
+  on-change: delegate('onValue')
+}
+
 streamFromBacon = -> stream-proto with __bacon: it
+propFromBacon = -> prop-proto with __bacon: it
 
 stream = ->
   bus = new b.Bus!

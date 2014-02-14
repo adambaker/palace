@@ -18,7 +18,7 @@ streamFromBacon = (baconStream) ->
       )
       streamFromBacon(b.zipAsArray baconStreams)
     zipWith: (f, ...streams) ->
-      @zip.apply(@, streams).map((...args) -> f args)
+      @zip.apply(@, streams).map(-> f.apply(null, it))
   }
   <[onError onEnd take takeWhile filter map]>.forEach((method) ->
     stream[method] = delegate(method)

@@ -3448,10 +3448,8 @@ if (typeof JSON !== 'object') {
       zipWith: function(f){
         var streams;
         streams = slice$.call(arguments, 1);
-        return this.zip.apply(this, streams).map(function(){
-          var args;
-          args = slice$.call(arguments);
-          return f(args);
+        return this.zip.apply(this, streams).map(function(it){
+          return f.apply(null, it);
         });
       }
     };

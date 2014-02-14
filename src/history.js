@@ -1,2 +1,3 @@
 var stream = require('./streams');
-require('../node_modules/history.js/history')
+require('../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history')
+

@@ -73,6 +73,8 @@ mod = (palace) !->
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
         History.setHash(History.getHashByState(states[1]));
+        console.log('# state value:' + JSON.stringify(state.value, null, 2))
+        console.log('# expected:' + JSON.stringify(History.normalize-state(states.1), null, 2))
         assert.deep-equal state.value, History.normalize-state(states[1])
 
       o 'changes with pushState' !->

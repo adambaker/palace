@@ -74,6 +74,8 @@
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
           History.setHash(History.getHashByState(states[1]));
+          console.log('# state value:' + JSON.stringify(state.value, null, 2));
+          console.log('# expected:' + JSON.stringify(History.normalizeState(states[1]), null, 2));
           assert.deepEqual(state.value, History.normalizeState(states[1]));
         });
         o('changes with pushState', function(){

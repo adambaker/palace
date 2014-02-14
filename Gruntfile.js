@@ -35,7 +35,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
   grunt.loadNpmTasks('grunt-livescript');
 
-  grunt.registerTask('build', ['livescript', 'browserify']);
-  grunt.registerTask('test', ['build', 'mocha_phantomjs']);
+  grunt.registerTask('build', ['livescript:src', 'browserify']);
+  grunt.registerTask('test', ['build', 'livescript:test', 'mocha_phantomjs']);
   grunt.registerTask('default', ['test']);
 };

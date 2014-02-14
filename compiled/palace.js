@@ -1,6 +1,6 @@
 (function(){
   module.exports = {
-    Stream: require('./streams'),
+    streams: require('./streams'),
     $: require('./jquery'),
     history: require('./history'),
     updateHtml: curry$(function(selector, html){

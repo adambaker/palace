@@ -50,20 +50,32 @@
       'url': '/eight'
     }
   };
-  mod = function(history){
-    var o;
+  mod = function(palace){
+    var o, state;
     o = it;
+    state = palace.history.state;
     describe('palace.history', function(){
-      o('it loads the history', function(){
+      o('loads the history', function(){
         assert(window.History);
+      });
+      o('exports a history state property', function(){
+        assert(palace.streams.isProperty(state));
+      });
+      /*The tests recapitulate the history.js test suite, but check
+       * the evolving value of the palace property.
+       */
+      describe('history.js tests, on our property', function(){
+        o('starts with a default state from url', function(){
+          assert.deepEqual(state.value, History.normalizeState(states[0]));
+        });
       });
     });
   };
   if (typeof define === 'function') {
     define(['palace'], function(palace){
-      mod(palace.history);
+      mod(palace);
     });
   } else {
-    mod(require('../../compiled/history'));
+    mod(require('../../compiled/palace'));
   }
 }).call(this);

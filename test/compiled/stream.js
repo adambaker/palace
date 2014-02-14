@@ -169,7 +169,7 @@
         assert(!stream.isStream(this.prop));
       });
       o("events on the stream change the prop's value", function(){
-        this.prop.onChange(this.spy);
+        this.prop.each(this.spy);
         this['in'].push(12);
         this['in'].push('fool');
         assert.deepEqual(this.spy.args, [['starting value'], [12], ['fool']]);
@@ -187,23 +187,26 @@
         mapped = this.prop.map(function(it){
           return it + 2;
         });
-        mapped.onChange(this.spy);
+        mapped.each(this.spy);
         this['in'].push(1);
         this['in'].push(10);
         assert.deepEqual(this.spy.args, [['starting value2'], [3], [12]]);
       });
       o('valueOf returns the current value', function(){
         assert.equal(this.prop.valueOf(), 'starting value');
+        assert.equal(this.prop.value, 'starting value');
         this['in'].push(12);
         assert.equal(this.prop.valueOf(), 12);
+        assert.equal(this.prop.value, 12);
         this['in'].push('fool');
         assert.equal(this.prop.valueOf(), 'fool');
+        assert.equal(this.prop.value, 'fool');
       });
     });
   };
   if (typeof define === 'function') {
     define(['palace'], function(palace){
-      mod(palace.Stream);
+      mod(palace.streams);
     });
   } else {
     mod(require('../../compiled/streams'));

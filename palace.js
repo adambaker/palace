@@ -3476,7 +3476,7 @@ if (typeof JSON !== 'object') {
   });
   streamProto.fmap = streamProto.map;
   propProto = {
-    onChange: delegate('onValue'),
+    each: delegate('onValue'),
     changes: delegate('changes', streamFromBacon),
     valueOf: function(){
       return this.value;

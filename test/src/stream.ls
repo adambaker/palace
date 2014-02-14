@@ -137,8 +137,9 @@ mod = (stream) !->
     o 'isProperty is true, isStream is false' !->
       assert stream.is-property(@prop)
       assert !stream.is-stream(@prop)
+
     o "events on the stream change the prop's value" !->
-      @prop.on-change @spy
+      @prop.each @spy
       @in.push 12
       @in.push \fool
       assert.deep-equal @spy.args, [['starting value'], [12], [\fool]]
@@ -152,17 +153,20 @@ mod = (stream) !->
 
     o 'map derives a new property' !->
       mapped = @prop.map(-> it + 2)
-      mapped.on-change @spy
+      mapped.each @spy
       @in.push 1
       @in.push 10
       assert.deep-equal @spy.args, [['starting value2'], [3], [12]]
 
-    o 'valueOf returns the current value' !->
+    o 'value, valueOf returns the current value' !->
       assert.equal @prop.value-of!, 'starting value'
+      assert.equal @prop.value, 'starting value'
       @in.push 12
       assert.equal @prop.value-of!, 12
+      assert.equal @prop.value, 12
       @in.push \fool
       assert.equal @prop.value-of!, \fool
+      assert.equal @prop.value, \fool
 
 if typeof define == \function
   define <[palace]> (palace) !->

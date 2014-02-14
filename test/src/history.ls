@@ -60,8 +60,12 @@ mod = (palace) !->
     o 'exports a history state property' !->
       assert palace.streams.is-property state
 
-    o 'starts with a default state from url' !->
-      assert.deep-equal state.value, History.normalize-state(states[0])
+    /*The tests recapitulate the history.js test suite, but check
+     * the evolving value of the palace property.
+     */
+    describe 'history.js tests, on our property' !->
+      o 'starts with a default state from url' !->
+        assert.deep-equal state.value, History.normalize-state(states[0])
 
 if typeof define == \function
   define <[palace]> (palace) !->

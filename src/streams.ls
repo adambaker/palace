@@ -32,7 +32,7 @@ stream-proto = {
 stream-proto.fmap = stream-proto.map
 
 prop-proto = {
-  on-change: delegate \onValue
+  each: delegate \onValue
   changes: delegate \changes, stream-from-bacon
   value-of: -> @value
 }

@@ -87,7 +87,7 @@
           testState(state.value, 0);
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
-          History.setHash(History.getHashByState(states[1]));
+          push(states[1].data, states[1].title, states[1].url);
           testState(state.value, 1);
         });
         o('changes with pushState', function(){

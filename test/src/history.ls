@@ -88,7 +88,8 @@ mod = (palace) !->
         test-state state.value, 0
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
-        History.setHash(History.getHashByState(states[1]));
+        #History.setHash(History.getHashByState(states[1]));
+        push states.1.data, states.1.title, states.1.url
         test-state state.value, 1
 
       o 'changes with pushState' !->

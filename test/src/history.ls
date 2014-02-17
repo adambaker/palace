@@ -80,6 +80,10 @@ mod = (palace) !->
         @spy = sinon.spy!
         state.changes!each @spy
 
+      after ->
+        History.back!
+        History.back!
+
       o 'starts with a default state from url' !->
         test-state state.value, 0
 
@@ -152,9 +156,21 @@ mod = (palace) !->
           History.back!
         ), 100
 
-      o 'adding another state' !->
+      o 'adding more states' !->
         push states.6.data, states.6.title, states.6.url
         test-state state.value, 6
+        push states.7.data, states.7.title, states.7.url
+        test-state state.value, 7
+        push states.8.data, states.8.title, states.8.url
+        test-state state.value, 8
+        next-state = 7
+        unsub = state.changes!.each ->
+          test-state it, next-state
+          next-state--;
+          if next-state < 6
+            unsub!
+            done!
+        History.back!
 
 
 if typeof define == \function

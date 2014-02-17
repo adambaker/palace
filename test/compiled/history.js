@@ -79,6 +79,10 @@
           this.spy = sinon.spy();
           state.changes().each(this.spy);
         });
+        after(function(){
+          History.back();
+          return History.back();
+        });
         o('starts with a default state from url', function(){
           testState(state.value, 0);
         });
@@ -168,9 +172,24 @@
             return History.back();
           }, 100);
         });
-        o('adding another state', function(){
+        o('adding more states', function(){
+          var nextState, unsub;
           push(states[6].data, states[6].title, states[6].url);
           testState(state.value, 6);
+          push(states[7].data, states[7].title, states[7].url);
+          testState(state.value, 7);
+          push(states[8].data, states[8].title, states[8].url);
+          testState(state.value, 8);
+          nextState = 7;
+          unsub = state.changes().each(function(it){
+            testState(it, nextState);
+            nextState--;
+            if (nextState < 6) {
+              unsub();
+              return done();
+            }
+          });
+          History.back();
         });
       });
     });

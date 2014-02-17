@@ -1,5 +1,5 @@
 (function(){
-  var b, streamFromBacon, propFromBacon, delegate, streamProto, propProto, stream, slice$ = [].slice;
+  var b, streamFromBacon, propFromBacon, delegate, streamProto, i$, ref$, len$, method, propProto, stream, slice$ = [].slice;
   b = require('baconjs');
   streamFromBacon = function(it){
     var ref$;
@@ -26,13 +26,14 @@
     onEnd: delegate('onEnd'),
     onError: delegate('onError'),
     merge: function(){
-      var others, bus;
+      var others, bus, i$, len$, other;
       others = slice$.call(arguments);
       bus = new b.Bus();
       bus.plug(this.__bacon);
-      others.forEach(function(it){
-        return bus.plug(it.__bacon);
-      });
+      for (i$ = 0, len$ = others.length; i$ < len$; ++i$) {
+        other = others[i$];
+        bus.plug(other.__bacon);
+      }
       return streamFromBacon(bus);
     },
     zip: function(){
@@ -54,9 +55,10 @@
       return propFromBacon(this.__bacon.toProperty(initial));
     }
   };
-  ['take', 'takeWhile', 'filter', 'map'].forEach(function(method){
-    return streamProto[method] = delegate(method, streamFromBacon);
-  });
+  for (i$ = 0, len$ = (ref$ = ['take', 'takeWhile', 'filter', 'map']).length; i$ < len$; ++i$) {
+    method = ref$[i$];
+    streamProto[method] = delegate(method, streamFromBacon);
+  }
   streamProto.fmap = streamProto.map;
   propProto = {
     each: delegate('onValue'),
@@ -65,9 +67,10 @@
       return this.value;
     }
   };
-  ['map'].forEach(function(method){
-    return propProto[method] = delegate(method, propFromBacon);
-  });
+  for (i$ = 0, len$ = (ref$ = ['map']).length; i$ < len$; ++i$) {
+    method = ref$[i$];
+    propProto[method] = delegate(method, propFromBacon);
+  }
   stream = function(){
     var bus;
     bus = new b.Bus();

@@ -3353,7 +3353,7 @@ if (typeof JSON !== 'object') {
 
 },{"../bower_components/history/scripts/bundled-uncompressed/html4+html5/native.history":1,"./streams":5}],3:[function(require,module,exports){
 (function(){
-  var stream, events, cap, ctors;
+  var stream, events, cap, ctors, i$, len$, evType;
   stream = require('./streams');
   events = ['resize', 'blur', 'change', 'focus', 'focusin', 'focusout', 'select', 'submit', 'keydown', 'keyup', 'keypress', 'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave'];
   cap = function(str){
@@ -3372,9 +3372,10 @@ if (typeof JSON !== 'object') {
       return ctors.on(event, document, selector);
     })
   };
-  events.forEach(function(evType){
-    return ctors['all' + cap(evType)] = ctors.onAlways(evType);
-  });
+  for (i$ = 0, len$ = events.length; i$ < len$; ++i$) {
+    evType = events[i$];
+    ctors['all' + cap(evType)] = ctors.onAlways(evType);
+  }
   module.exports = ctors;
   function curry$(f, bound){
     var context,
@@ -3418,7 +3419,7 @@ if (typeof JSON !== 'object') {
 
 },{"./history":2,"./jquery":3,"./streams":5}],5:[function(require,module,exports){
 (function(){
-  var b, streamFromBacon, propFromBacon, delegate, streamProto, propProto, stream, slice$ = [].slice;
+  var b, streamFromBacon, propFromBacon, delegate, streamProto, i$, ref$, len$, method, propProto, stream, slice$ = [].slice;
   b = require('baconjs');
   streamFromBacon = function(it){
     var ref$;
@@ -3445,13 +3446,14 @@ if (typeof JSON !== 'object') {
     onEnd: delegate('onEnd'),
     onError: delegate('onError'),
     merge: function(){
-      var others, bus;
+      var others, bus, i$, len$, other;
       others = slice$.call(arguments);
       bus = new b.Bus();
       bus.plug(this.__bacon);
-      others.forEach(function(it){
-        return bus.plug(it.__bacon);
-      });
+      for (i$ = 0, len$ = others.length; i$ < len$; ++i$) {
+        other = others[i$];
+        bus.plug(other.__bacon);
+      }
       return streamFromBacon(bus);
     },
     zip: function(){
@@ -3473,9 +3475,10 @@ if (typeof JSON !== 'object') {
       return propFromBacon(this.__bacon.toProperty(initial));
     }
   };
-  ['take', 'takeWhile', 'filter', 'map'].forEach(function(method){
-    return streamProto[method] = delegate(method, streamFromBacon);
-  });
+  for (i$ = 0, len$ = (ref$ = ['take', 'takeWhile', 'filter', 'map']).length; i$ < len$; ++i$) {
+    method = ref$[i$];
+    streamProto[method] = delegate(method, streamFromBacon);
+  }
   streamProto.fmap = streamProto.map;
   propProto = {
     each: delegate('onValue'),
@@ -3484,9 +3487,10 @@ if (typeof JSON !== 'object') {
       return this.value;
     }
   };
-  ['map'].forEach(function(method){
-    return propProto[method] = delegate(method, propFromBacon);
-  });
+  for (i$ = 0, len$ = (ref$ = ['map']).length; i$ < len$; ++i$) {
+    method = ref$[i$];
+    propProto[method] = delegate(method, propFromBacon);
+  }
   stream = function(){
     var bus;
     bus = new b.Bus();

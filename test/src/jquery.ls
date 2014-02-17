@@ -45,9 +45,9 @@ mod = (palace) !->
     o "partially applies" !->
       assert.isFunction on-always \click
 
-    <[resize blur change focus focusin focusout select submit keydown keyup
-    keypress click dblclick mousedown mouseup mouseover mouseout
-    mouseenter mouseleave]>.forEach (evType) !->
+    for evType in <[resize blur change focus focusin focusout
+      select submit keydown keyup keypress click dblclick
+      mousedown mouseup mouseover mouseout mouseenter mouseleave]>
       method = "all#{cap evType}"
 
       o "#{method} delegates to onAlways" !->

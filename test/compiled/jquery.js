@@ -37,6 +37,7 @@
       });
     });
     describe('delegates', function(){
+      var i$, ref$, len$, evType, method;
       beforeEach(function(){
         this.stub = sinon.stub(palace.$, 'on');
         this.spy = sinon.spy();
@@ -54,22 +55,24 @@
       o("partially applies", function(){
         assert.isFunction(onAlways('click'));
       });
-      ['resize', 'blur', 'change', 'focus', 'focusin', 'focusout', 'select', 'submit', 'keydown', 'keyup', 'keypress', 'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave'].forEach(function(evType){
-        var method;
+      for (i$ = 0, len$ = (ref$ = ['resize', 'blur', 'change', 'focus', 'focusin', 'focusout', 'select', 'submit', 'keydown', 'keyup', 'keypress', 'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave']).length; i$ < len$; ++i$) {
+        evType = ref$[i$];
         method = "all" + cap(evType);
-        o(method + " delegates to onAlways", function(){
-          palace.$[method]('#div1');
-          assert.deepEqual(this.stub.args, [[evType, document, '#div1']]);
-        });
-        o(method + " captures the event", function(){
-          var el;
-          palace.$.on.restore();
-          $('body').append(el = $('<input type="text">'));
-          palace.$[method]('input').each(this.spy);
-          el.trigger(evType);
-          assert(this.spy.calledOnce);
-        });
-      });
+        o(method + " delegates to onAlways", fn$);
+        o(method + " captures the event", fn1$);
+      }
+      function fn$(){
+        palace.$[method]('#div1');
+        assert.deepEqual(this.stub.args, [[evType, document, '#div1']]);
+      }
+      function fn1$(){
+        var el;
+        palace.$.on.restore();
+        $('body').append(el = $('<input type="text">'));
+        palace.$[method]('input').each(this.spy);
+        el.trigger(evType);
+        assert(this.spy.calledOnce);
+      }
     });
   };
   if (typeof define === 'function' && jQuery) {

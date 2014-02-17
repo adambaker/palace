@@ -14,6 +14,7 @@ ctors = {
   onAlways: (event, selector) --> ctors.on(event, document, selector)
 }
 
-events.forEach((evType) -> ctors['all'+cap(evType)] = ctors.onAlways(evType))
+for evType in events
+  ctors['all'+cap(evType)] = ctors.onAlways(evType)
 
 module.exports = ctors

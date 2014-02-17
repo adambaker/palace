@@ -16,7 +16,8 @@ stream-proto = {
   merge: (...others) ->
     bus = new b.Bus!
     bus.plug @__bacon
-    others.forEach -> bus.plug it.__bacon
+    for other in others
+      bus.plug other.__bacon
     stream-from-bacon bus
   zip: (...others) ->
     baconStreams = [@__bacon] ++ others.map -> it.__bacon
@@ -26,9 +27,9 @@ stream-proto = {
   property: (initial) ->
     propFromBacon @__bacon.toProperty(initial)
 }
-<[take takeWhile filter map]>.forEach((method) ->
+for method in <[take takeWhile filter map]>
   stream-proto[method] = delegate(method, stream-from-bacon)
-)
+
 stream-proto.fmap = stream-proto.map
 
 prop-proto = {
@@ -37,9 +38,8 @@ prop-proto = {
   value-of: -> @value
 }
 
-<[map]>.forEach((method) ->
+for method in <[map]>
   prop-proto[method] = delegate(method, prop-from-bacon)
-)
 
 stream = ->
   bus = new b.Bus!

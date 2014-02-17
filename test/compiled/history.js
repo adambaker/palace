@@ -1,5 +1,5 @@
 (function(){
-  var states, mod;
+  var states, testState, mod;
   states = {
     0: {
       'url': document.location.href.replace(/#.*$/, ''),
@@ -50,6 +50,15 @@
       'url': '/eight'
     }
   };
+  testState = function(actual, expected){
+    var normExpected;
+    normExpected = History.normalizeState(expected);
+    assert(actual.normalized, 'normalized');
+    assert.equal(actual.title, normExpected.title, 'title');
+    assert.equal(actual.url, normExpected.url, 'url');
+    assert.deepEqual(actual.state, normExpected.state, 'state');
+    return assert.equal(actual.cleanUrl, normExpected.cleanUrl, 'cleanUrl');
+  };
   mod = function(palace){
     var o, state;
     o = it;
@@ -74,13 +83,11 @@
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
           History.setHash(History.getHashByState(states[1]));
-          console.log('# state value:' + JSON.stringify(state.value, null, 2));
-          console.log('# expected:' + JSON.stringify(History.normalizeState(states[1]), null, 2));
-          assert.deepEqual(state.value, History.normalizeState(states[1]));
+          testState(state.value, states[1]);
         });
         o('changes with pushState', function(){
           palace.history.pushState(states[2].data, states[2].title, states[2].url);
-          assert.deepEqual(state.value, History.normalizeState(states[2]));
+          testState(state.value, states[2]);
         });
       });
     });

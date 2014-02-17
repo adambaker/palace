@@ -49,6 +49,14 @@ states = {
   }
 }
 
+test-state = (actual, expected) ->
+  norm-expected = History.normalize-state expected
+  assert actual.normalized, \normalized
+  assert.equal actual.title, norm-expected.title, \title
+  assert.equal actual.url, norm-expected.url, \url
+  assert.deep-equal actual.state, norm-expected.state, \state
+  assert.equal actual.clean-url, norm-expected.clean-url, \cleanUrl
+
 mod = (palace) !->
   const o = it
   state = palace.history.state
@@ -73,13 +81,11 @@ mod = (palace) !->
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
         History.setHash(History.getHashByState(states[1]));
-        console.log('# state value:' + JSON.stringify(state.value, null, 2))
-        console.log('# expected:' + JSON.stringify(History.normalize-state(states.1), null, 2))
-        assert.deep-equal state.value, History.normalize-state(states[1])
+        test-state state.value, states.1
 
       o 'changes with pushState' !->
         palace.history.push-state states.2.data, states.2.title, states.2.url
-        assert.deep-equal state.value, History.normalize-state(states[2])
+        test-state state.value, states.2
 
 
 

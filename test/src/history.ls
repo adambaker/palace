@@ -59,7 +59,10 @@ test-state = (actual, expected) ->
 
 mod = (palace) !->
   const o = it
-  state = palace.history.state
+  hist  = palace.history
+  state = hist.state
+  push  = hist.push-state
+  replace = hist.replace-state
 
   describe 'palace.history' !->
     o 'loads the history' !->
@@ -74,19 +77,23 @@ mod = (palace) !->
     describe 'history.js tests, on our property' !->
       before-each !->
         @spy = sinon.spy!
-        state.each @spy
+        state.changes!each @spy
 
       o 'starts with a default state from url' !->
-        assert.deep-equal state.value, History.normalize-state(states[0])
+        test-state state.value, History.normalize-state(states[0])
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
         History.setHash(History.getHashByState(states[1]));
         test-state state.value, states.1
 
       o 'changes with pushState' !->
-        palace.history.push-state states.2.data, states.2.title, states.2.url
+        push states.2.data, states.2.title, states.2.url
         test-state state.value, states.2
 
+      o 'does not change when you push or replace the same state' !->
+        replace states.2.data, states.2.title, states.2.url
+        push states.2.data, states.2.title, states.2.url
+        assert !@spy.called
 
 
 if typeof define == \function

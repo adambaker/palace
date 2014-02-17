@@ -60,9 +60,12 @@
     return assert.equal(actual.cleanUrl, normExpected.cleanUrl, 'cleanUrl');
   };
   mod = function(palace){
-    var o, state;
+    var o, hist, state, push, replace;
     o = it;
-    state = palace.history.state;
+    hist = palace.history;
+    state = hist.state;
+    push = hist.pushState;
+    replace = hist.replaceState;
     describe('palace.history', function(){
       o('loads the history', function(){
         assert(window.History);
@@ -76,18 +79,23 @@
       describe('history.js tests, on our property', function(){
         beforeEach(function(){
           this.spy = sinon.spy();
-          state.each(this.spy);
+          state.changes().each(this.spy);
         });
         o('starts with a default state from url', function(){
-          assert.deepEqual(state.value, History.normalizeState(states[0]));
+          testState(state.value, History.normalizeState(states[0]));
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
           History.setHash(History.getHashByState(states[1]));
           testState(state.value, states[1]);
         });
         o('changes with pushState', function(){
-          palace.history.pushState(states[2].data, states[2].title, states[2].url);
+          push(states[2].data, states[2].title, states[2].url);
           testState(state.value, states[2]);
+        });
+        o('does not change when you push or replace the same state', function(){
+          replace(states[2].data, states[2].title, states[2].url);
+          push(states[2].data, states[2].title, states[2].url);
+          assert(!this.spy.called);
         });
       });
     });

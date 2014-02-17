@@ -8,6 +8,7 @@
   });
   module.exports = {
     state: hist.stream.property(History.getState()),
-    pushState: History.pushState
+    pushState: History.pushState,
+    replaceState: History.replaceState
   };
 }).call(this);

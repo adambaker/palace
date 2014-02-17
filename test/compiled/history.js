@@ -54,7 +54,9 @@
     var normExpected;
     normExpected = History.normalizeState(states[expected]);
     assert(actual.normalized, 'normalized');
+    console.log(actual.state);
     assert.deepEqual(actual.state, normExpected.state, 'state');
+    console.log(actual.title);
     return assert.equal(actual.title, normExpected.title, 'title');
   };
   mod = function(palace){

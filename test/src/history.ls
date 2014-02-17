@@ -52,7 +52,9 @@ states = {
 test-state = (actual, expected) ->
   norm-expected = History.normalize-state states[expected]
   assert actual.normalized, \normalized
+  console.log actual.state
   assert.deep-equal actual.state, norm-expected.state, \state
+  console.log actual.title
   assert.equal actual.title, norm-expected.title, \title
   ## these fuck up testling
   #assert.equal actual.clean-url, norm-expected.clean-url, \cleanUrl

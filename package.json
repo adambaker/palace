@@ -1,6 +1,6 @@
 {
   "name": "palace",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Functional reactive web application framework.",
   "main": "palace.js",
   "scripts": {

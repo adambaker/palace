@@ -82,7 +82,7 @@
           state.changes().each(this.spy);
         });
         o('starts with a default state from url', function(){
-          testState(state.value, History.normalizeState(states[0]));
+          testState(state.value, states[0]);
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
           History.setHash(History.getHashByState(states[1]));

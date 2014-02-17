@@ -80,7 +80,7 @@ mod = (palace) !->
         state.changes!each @spy
 
       o 'starts with a default state from url' !->
-        test-state state.value, History.normalize-state(states[0])
+        test-state state.value, states.0
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
         History.setHash(History.getHashByState(states[1]));

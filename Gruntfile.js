@@ -28,9 +28,17 @@ module.exports = function(grunt) {
     },
     mocha_phantomjs: {
       all: ['test-harness.html']
-    }
+    },
+    bump: {
+      options: {
+        files: ['package.json', 'bower.json'],
+        commitFiles: ['package.json', 'bower.json'],
+        pushTo: 'origin'
+      }
+    },
   });
 
+  grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
   grunt.loadNpmTasks('grunt-livescript');

@@ -158,7 +158,7 @@ mod = (palace) !->
           History.back!
         ), 100
 
-      o 'adding more states' !->
+      o 'adding more states' (done) !->
         push states.6.data, states.6.title, states.6.url
         test-state state.value, 6
         push states.7.data, states.7.title, states.7.url
@@ -172,6 +172,7 @@ mod = (palace) !->
           if next-state < 6
             unsub!
             done!
+        History.back!
         History.back!
 
 

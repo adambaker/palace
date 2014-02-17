@@ -174,7 +174,7 @@
             return History.back();
           }, 100);
         });
-        o('adding more states', function(){
+        o('adding more states', function(done){
           var nextState, unsub;
           push(states[6].data, states[6].title, states[6].url);
           testState(state.value, 6);
@@ -191,6 +191,7 @@
               return done();
             }
           });
+          History.back();
           History.back();
         });
       });

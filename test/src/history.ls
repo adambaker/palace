@@ -52,9 +52,9 @@ states = {
 test-state = (actual, expected) ->
   norm-expected = History.normalize-state states[expected]
   assert actual.normalized, \normalized
+  assert.deep-equal actual.state, norm-expected.state, \state
   assert.equal actual.title, norm-expected.title, \title
   assert.equal actual.clean-url, norm-expected.clean-url, \cleanUrl
-  assert.deep-equal actual.state, norm-expected.state, \state
   assert.equal actual.url, norm-expected.url, \url
 
 mod = (palace) !->
@@ -80,7 +80,7 @@ mod = (palace) !->
         state.changes!each @spy
 
       o 'starts with a default state from url' !->
-        test-state state.value, 0
+        assert state.value.normalized
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
         History.setHash(History.getHashByState(states[1]));
@@ -90,10 +90,10 @@ mod = (palace) !->
         push states.2.data, states.2.title, states.2.url
         test-state state.value, 2
 
-      o 'does not change when you push or replace the same state' !->
+      o 'does not change when you push or replace the same state' (done) !->
         replace states.2.data, states.2.title, states.2.url
         push states.2.data, states.2.title, states.2.url
-        assert !@spy.called
+        set-timeout (~> assert !@spy.called; done!), 10
 
       o 'replaces the state' !->
         replace states.3.data, states.3.title, states.3.url
@@ -103,14 +103,58 @@ mod = (palace) !->
 
       o 'can go back two' (done) !->
         called = false
-        state.changes!.each ->
+        unsub = state.changes!.each ->
           if called
-            test-state state.value, 1
+            test-state it, 1
+            unsub!
             done!
           else
-            test-state state.value, 3
+            test-state it, 3
             called := true
-        hist.go -2
+        History.go -2
+
+      o 'back works' (done) !->
+        unsub = state.changes!.each ->
+          test-state it, 0
+          unsub!
+          done!
+        History.back!
+
+      o 'can go forward two' (done) !->
+        called = false
+        unsub = state.changes!.each ->
+          if called
+            test-state it, 3
+            unsub!
+            done!
+          else
+            test-state it, 1
+            called := true
+        History.go 2
+
+      o 'forward works' (done) !->
+        unsub = state.changes!.each ->
+          test-state it, 4
+          unsub!
+          done!
+        History.forward!
+
+      o 'navigating with traditional anchors'  (done) !->
+        History.set-hash \log
+        History.back!
+        set-timeout (~>
+          assert !@spy.called
+          unsub = state.changes!.each ->
+            test-state it, 3
+            unsub!
+            done!
+          History.back!
+        ), 100
+
+      o 'adding another state' !->
+        push states.6.data, states.6.title, states.6.url
+        test-state state.value, 6
+
 
 if typeof define == \function
   define <[palace]> (palace) !->

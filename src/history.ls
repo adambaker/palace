@@ -9,5 +9,4 @@ module.exports = {
   state: hist.stream.property(History.get-state!)
   push-state: History.push-state
   replace-state: History.replace-state
-  go: History.go
 }

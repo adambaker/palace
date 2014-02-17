@@ -54,9 +54,9 @@
     var normExpected;
     normExpected = History.normalizeState(states[expected]);
     assert(actual.normalized, 'normalized');
+    assert.deepEqual(actual.state, normExpected.state, 'state');
     assert.equal(actual.title, normExpected.title, 'title');
     assert.equal(actual.cleanUrl, normExpected.cleanUrl, 'cleanUrl');
-    assert.deepEqual(actual.state, normExpected.state, 'state');
     return assert.equal(actual.url, normExpected.url, 'url');
   };
   mod = function(palace){
@@ -82,7 +82,7 @@
           state.changes().each(this.spy);
         });
         o('starts with a default state from url', function(){
-          testState(state.value, 0);
+          assert(state.value.normalized);
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
           History.setHash(History.getHashByState(states[1]));
@@ -92,10 +92,14 @@
           push(states[2].data, states[2].title, states[2].url);
           testState(state.value, 2);
         });
-        o('does not change when you push or replace the same state', function(){
+        o('does not change when you push or replace the same state', function(done){
+          var this$ = this;
           replace(states[2].data, states[2].title, states[2].url);
           push(states[2].data, states[2].title, states[2].url);
-          assert(!this.spy.called);
+          setTimeout(function(){
+            assert(!this$.spy.called);
+            return done();
+          }, 10);
         });
         o('replaces the state', function(){
           replace(states[3].data, states[3].title, states[3].url);
@@ -104,18 +108,71 @@
           testState(state.value, 4);
         });
         o('can go back two', function(done){
-          var called;
+          var called, unsub;
           called = false;
-          state.changes().each(function(){
+          unsub = state.changes().each(function(it){
             if (called) {
-              testState(state.value, 1);
+              testState(it, 1);
+              unsub();
               return done();
             } else {
-              testState(state.value, 3);
+              testState(it, 3);
               return called = true;
             }
           });
-          hist.go(-2);
+          History.go(-2);
+        });
+        o('back works', function(done){
+          var unsub;
+          unsub = state.changes().each(function(it){
+            testState(it, 0);
+            unsub();
+            return done();
+          });
+          History.back();
+        });
+        o('can go forward two', function(done){
+          var called, unsub;
+          called = false;
+          unsub = state.changes().each(function(it){
+            if (called) {
+              testState(it, 3);
+              unsub();
+              return done();
+            } else {
+              testState(it, 1);
+              return called = true;
+            }
+          });
+          History.go(2);
+        });
+        o('forward works', function(done){
+          var unsub;
+          unsub = state.changes().each(function(it){
+            testState(it, 4);
+            unsub();
+            return done();
+          });
+          History.forward();
+        });
+        o('navigating with traditional anchors', function(done){
+          var this$ = this;
+          History.setHash('log');
+          History.back();
+          setTimeout(function(){
+            var unsub;
+            assert(!this$.spy.called);
+            unsub = state.changes().each(function(it){
+              testState(it, 3);
+              unsub();
+              return done();
+            });
+            return History.back();
+          }, 100);
+        });
+        o('adding another state', function(){
+          push(states[6].data, states[6].title, states[6].url);
+          testState(state.value, 6);
         });
       });
     });

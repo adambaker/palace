@@ -9,7 +9,6 @@
   module.exports = {
     state: hist.stream.property(History.getState()),
     pushState: History.pushState,
-    replaceState: History.replaceState,
-    go: History.go
+    replaceState: History.replaceState
   };
 }).call(this);

@@ -52,7 +52,7 @@ states = {
 test-state = (actual, expected) ->
   norm-expected = History.normalize-state states[expected]
   assert actual.normalized, \normalized
-  console.log JSON.stringify(actual.state), JSON.stringify(norm-expected.state)
+  console.log actual.state, norm-expected.state
   assert.deep-equal actual.state, norm-expected.state, \state
   console.log actual.title, norm-expected.title
   assert.equal actual.title, norm-expected.title, \title

@@ -54,7 +54,7 @@
     var normExpected;
     normExpected = History.normalizeState(states[expected]);
     assert(actual.normalized, 'normalized');
-    console.log(JSON.stringify(actual.state), JSON.stringify(normExpected.state));
+    console.log(actual.state, normExpected.state);
     assert.deepEqual(actual.state, normExpected.state, 'state');
     console.log(actual.title, normExpected.title);
     return assert.equal(actual.title, normExpected.title, 'title');

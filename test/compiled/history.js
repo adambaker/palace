@@ -87,6 +87,11 @@
           testState(state.value, 0);
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
+          /* this is the original test:
+            History.setHash(History.getHashByState(states[1]));
+          but it doesn't work on IE9, and testing the graceful
+          upgrade really requires running the exposed interface
+          on older browsers anyway.*/
           push(states[1].data, states[1].title, states[1].url);
           testState(state.value, 1);
         });

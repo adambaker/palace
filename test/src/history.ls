@@ -50,12 +50,12 @@ states = {
 }
 
 test-state = (actual, expected) ->
-  norm-expected = History.normalize-state expected
+  norm-expected = History.normalize-state states[expected]
   assert actual.normalized, \normalized
   assert.equal actual.title, norm-expected.title, \title
-  assert.equal actual.url, norm-expected.url, \url
-  assert.deep-equal actual.state, norm-expected.state, \state
   assert.equal actual.clean-url, norm-expected.clean-url, \cleanUrl
+  assert.deep-equal actual.state, norm-expected.state, \state
+  assert.equal actual.url, norm-expected.url, \url
 
 mod = (palace) !->
   const o = it
@@ -80,21 +80,37 @@ mod = (palace) !->
         state.changes!each @spy
 
       o 'starts with a default state from url' !->
-        test-state state.value, states.0
+        test-state state.value, 0
 
       o 'gracefully upgrades HTML4 -> HTML5' !->
         History.setHash(History.getHashByState(states[1]));
-        test-state state.value, states.1
+        test-state state.value, 1
 
       o 'changes with pushState' !->
         push states.2.data, states.2.title, states.2.url
-        test-state state.value, states.2
+        test-state state.value, 2
 
       o 'does not change when you push or replace the same state' !->
         replace states.2.data, states.2.title, states.2.url
         push states.2.data, states.2.title, states.2.url
         assert !@spy.called
 
+      o 'replaces the state' !->
+        replace states.3.data, states.3.title, states.3.url
+        test-state state.value, 3
+        push states.4.data, states.4.title, states.4.url
+        test-state state.value, 4
+
+      o 'can go back two' (done) !->
+        called = false
+        state.changes!.each ->
+          if called
+            test-state state.value, 1
+            done!
+          else
+            test-state state.value, 3
+            called := true
+        hist.go -2
 
 if typeof define == \function
   define <[palace]> (palace) !->

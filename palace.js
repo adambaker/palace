@@ -3347,7 +3347,8 @@ if (typeof JSON !== 'object') {
   module.exports = {
     state: hist.stream.property(History.getState()),
     pushState: History.pushState,
-    replaceState: History.replaceState
+    replaceState: History.replaceState,
+    go: History.go
   };
 }).call(this);
 

@@ -55,9 +55,7 @@
     normExpected = History.normalizeState(states[expected]);
     assert(actual.normalized, 'normalized');
     assert.deepEqual(actual.state, normExpected.state, 'state');
-    assert.equal(actual.title, normExpected.title, 'title');
-    assert.equal(actual.cleanUrl, normExpected.cleanUrl, 'cleanUrl');
-    return assert.equal(actual.url, normExpected.url, 'url');
+    return assert.equal(actual.title, normExpected.title, 'title');
   };
   mod = function(palace){
     var o, hist, state, push, replace;
@@ -82,7 +80,7 @@
           state.changes().each(this.spy);
         });
         o('starts with a default state from url', function(){
-          assert(state.value.normalized);
+          testState(state.value, 0);
         });
         o('gracefully upgrades HTML4 -> HTML5', function(){
           History.setHash(History.getHashByState(states[1]));

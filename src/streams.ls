@@ -13,6 +13,11 @@ stream-proto = {
   each: delegate \onValue
   onEnd: delegate \onEnd
   onError: delegate \onError
+  join: ->
+    bus = new b.Bus
+    @each (stream) ->
+      bus.plug(stream.__bacon)
+    stream-from-bacon bus
   merge: (...others) ->
     bus = new b.Bus!
     bus.plug @__bacon
@@ -24,6 +29,7 @@ stream-proto = {
     stream-from-bacon(b.zipAsArray baconStreams)
   zipWith: (f, ...streams) ->
     @zip.apply(@, streams).map(-> f.apply(null, it))
+  flat-map: (f) -> @map(f).join!
   property: (initial) ->
     propFromBacon @__bacon.toProperty(initial)
 }

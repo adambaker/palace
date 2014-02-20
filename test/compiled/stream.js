@@ -121,6 +121,42 @@
           this.other_in.push(null);
           assert.deepEqual(this.spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]);
         });
+        o('join merges a stream of streams', function(){
+          var streamOfStreams, joined;
+          streamOfStreams = stream();
+          joined = streamOfStreams.stream.join();
+          joined.each(this.spy);
+          streamOfStreams['in'].push(this.stream);
+          this['in'].push(2);
+          streamOfStreams['in'].push(this.other);
+          this['in'].push(11);
+          this.other_in.push(14);
+          streamOfStreams['in'].push(this.third);
+          this.third_in.push('hi');
+          this['in'].push(6);
+          this.other_in.push(8);
+          this.other_in.push(null);
+          assert.deepEqual(this.spy.args, [[2], [11], [14], ['hi'], [6], [8], [null]]);
+        });
+        o('flatMap maps and then joins', function(){
+          var streamOfStreams, flatMapped;
+          streamOfStreams = stream();
+          flatMapped = streamOfStreams.stream.flatMap(function(it){
+            return it;
+          });
+          flatMapped.each(this.spy);
+          streamOfStreams['in'].push(this.stream);
+          this['in'].push(2);
+          streamOfStreams['in'].push(this.other);
+          this['in'].push(11);
+          this.other_in.push(14);
+          streamOfStreams['in'].push(this.third);
+          this.third_in.push('hi');
+          this['in'].push(6);
+          this.other_in.push(8);
+          this.other_in.push(null);
+          assert.deepEqual(this.spy.args, [[2], [11], [14], ['hi'], [6], [8], [null]]);
+        });
         o('zip combines streams pairwise', function(){
           var zipped;
           zipped = this.stream.zip(this.other, this.third);

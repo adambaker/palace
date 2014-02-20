@@ -98,7 +98,39 @@ mod = (stream) !->
         @in.push(6)
         @other_in.push(8)
         @other_in.push(null)
-        assert.deepEqual @spy.args, [[2], [14], [11], ['hi'], [6], [8], [null]]
+        assert.deepEqual @spy.args, [[2], [14], [11], [\hi], [6], [8], [null]]
+
+      o 'join merges a stream of streams' !->
+        stream-of-streams = stream!
+        joined = stream-of-streams.stream.join!
+        joined.each @spy
+        stream-of-streams.in.push @stream
+        @in.push 2
+        stream-of-streams.in.push @other
+        @in.push 11
+        @other_in.push 14
+        stream-of-streams.in.push @third
+        @third_in.push \hi
+        @in.push 6
+        @other_in.push 8
+        @other_in.push null
+        assert.deepEqual @spy.args, [[2], [11], [14], [\hi], [6], [8], [null]]
+
+      o 'flatMap maps and then joins' !->
+        stream-of-streams = stream!
+        flat-mapped = stream-of-streams.stream.flat-map -> it
+        flat-mapped.each @spy
+        stream-of-streams.in.push @stream
+        @in.push 2
+        stream-of-streams.in.push @other
+        @in.push 11
+        @other_in.push 14
+        stream-of-streams.in.push @third
+        @third_in.push \hi
+        @in.push 6
+        @other_in.push 8
+        @other_in.push null
+        assert.deepEqual @spy.args, [[2], [11], [14], [\hi], [6], [8], [null]]
 
       o 'zip combines streams pairwise' !->
         zipped = @stream.zip @other, @third

@@ -25,6 +25,14 @@
     each: delegate('onValue'),
     onEnd: delegate('onEnd'),
     onError: delegate('onError'),
+    join: function(){
+      var bus;
+      bus = new b.Bus;
+      this.each(function(stream){
+        return bus.plug(stream.__bacon);
+      });
+      return streamFromBacon(bus);
+    },
     merge: function(){
       var others, bus, i$, len$, other;
       others = slice$.call(arguments);
@@ -50,6 +58,9 @@
       return this.zip.apply(this, streams).map(function(it){
         return f.apply(null, it);
       });
+    },
+    flatMap: function(f){
+      return this.map(f).join();
     },
     property: function(initial){
       return propFromBacon(this.__bacon.toProperty(initial));

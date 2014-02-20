@@ -3483,14 +3483,12 @@ if (typeof JSON !== 'object') {
   propProto = {
     each: delegate('onValue'),
     changes: delegate('changes', streamFromBacon),
+    asStream: delegate('toEventStream', streamFromBacon),
+    map: delegate('map', propFromBacon),
     valueOf: function(){
       return this.value;
     }
   };
-  for (i$ = 0, len$ = (ref$ = ['map']).length; i$ < len$; ++i$) {
-    method = ref$[i$];
-    propProto[method] = delegate(method, propFromBacon);
-  }
   stream = function(){
     var bus;
     bus = new b.Bus();

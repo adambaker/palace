@@ -35,11 +35,10 @@ stream-proto.fmap = stream-proto.map
 prop-proto = {
   each: delegate \onValue
   changes: delegate \changes, stream-from-bacon
+  as-stream: delegate \toEventStream, stream-from-bacon
+  map: delegate \map, prop-from-bacon
   value-of: -> @value
 }
-
-for method in <[map]>
-  prop-proto[method] = delegate(method, prop-from-bacon)
 
 stream = ->
   bus = new b.Bus!

@@ -168,6 +168,14 @@ mod = (stream) !->
       assert.equal @prop.value-of!, \fool
       assert.equal @prop.value, \fool
 
+    o 'asStream return a stream of values' !->
+      s = @prop.as-stream!
+      assert stream.is-stream(s)
+      s.each @spy
+      @in.push 12
+      @in.push \fool
+      assert.deep-equal @spy.args, [['starting value'], [12], [\fool]]
+
 if typeof define == \function
   define <[palace]> (palace) !->
     mod palace.streams

@@ -202,6 +202,15 @@
         assert.equal(this.prop.valueOf(), 'fool');
         assert.equal(this.prop.value, 'fool');
       });
+      o('asStream return a stream of values', function(){
+        var s;
+        s = this.prop.asStream();
+        assert(stream.isStream(s));
+        s.each(this.spy);
+        this['in'].push(12);
+        this['in'].push('fool');
+        assert.deepEqual(this.spy.args, [['starting value'], [12], ['fool']]);
+      });
     });
   };
   if (typeof define === 'function') {
